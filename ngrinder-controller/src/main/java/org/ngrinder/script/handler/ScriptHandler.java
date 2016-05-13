@@ -38,6 +38,7 @@ import java.util.Map;
 import static org.apache.commons.lang.StringUtils.startsWithIgnoreCase;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.FileUtils.setLastModifiedTime;
 
 /**
  * Script per language handler. This is the superclass for all sub
@@ -152,6 +153,7 @@ public abstract class ScriptHandler implements ControllerConstants {
 			processingResult.printf("%s is being written.\n", each.getPath());
 			LOGGER.info("{} is being written in {} for test {}", new Object[]{each.getPath(), toDir, testCaseId});
 			getFileEntryRepository().writeContentTo(user, each.getPath(), toDir);
+			setLastModifiedTime( each.getLastModifiedDate().getTime(), new File(toDir, each.getPath()));
 		}
 		processingResult.setSuccess(true);
 		prepareDistMore(testCaseId, user, scriptEntry, distDir, properties, processingResult);

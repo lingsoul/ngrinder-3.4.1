@@ -27,12 +27,15 @@ import net.grinder.common.GrinderProperties;
 import net.grinder.common.GrinderProperties.PersistenceException;
 import net.grinder.common.processidentity.ProcessReport;
 import net.grinder.communication.*;
+import net.grinder.console.distribution.CacheHighWaterMarkFactory;
 import net.grinder.engine.common.ConnectorFactory;
 import net.grinder.engine.common.EngineException;
 import net.grinder.engine.common.ScriptLocation;
 import net.grinder.engine.communication.ConsoleListener;
 import net.grinder.lang.AbstractLanguageHandler;
 import net.grinder.lang.Lang;
+import net.grinder.messages.agent.CacheHighWaterMark;
+import net.grinder.messages.agent.DistributionCacheCheckpointMessage;
 import net.grinder.messages.agent.StartGrinderMessage;
 import net.grinder.messages.console.AgentAddress;
 import net.grinder.messages.console.AgentProcessReportMessage;
@@ -42,6 +45,7 @@ import net.grinder.util.NetworkUtils;
 import net.grinder.util.thread.Condition;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.ngrinder.common.constants.AgentConstants;
 import org.ngrinder.common.util.NoOp;
@@ -365,7 +369,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 	}
 
 	private String buildTestRunProperties(ScriptLocation script, AbstractLanguageHandler handler, Properties systemProperty,
-	                                      GrinderProperties properties) {
+										  GrinderProperties properties) {
 		PropertyBuilder builder = new PropertyBuilder(properties, script.getDirectory(), properties.getBoolean(
 				"grinder.security", false), properties.getProperty("ngrinder.etc.hosts"),
 				NetworkUtils.getLocalHostName(), m_agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_SERVER_MODE),
@@ -425,7 +429,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 	public static final String GRINDER_PROP_TEST_ID = "grinder.test.id";
 
 	private GrinderProperties createAndMergeProperties(GrinderProperties properties,
-	                                                   GrinderProperties startMessageProperties) throws PersistenceException {
+													   GrinderProperties startMessageProperties) throws PersistenceException {
 
 		if (startMessageProperties != null) {
 			properties.putAll(startMessageProperties);
@@ -496,19 +500,24 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			final ClientReceiver receiver = ClientReceiver.connect(connector, new AgentAddress(m_agentIdentity));
 			m_sender = ClientSender.connect(receiver);
 			m_connector = connector;
-
+			File directory = null;
 			if (m_fileStore == null) {
 				// Only create the file store if we connected.
 				File base = m_agentConfig.getHome().getDirectory();
-				File directory = new File(new File(base, "file-store"), user);
+				directory = new File(new File(base, "file-store"), user);
 				m_fileStore = new FileStore(directory, m_logger);
 			}
 
-			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
-					.getCacheHighWaterMark()));
-
 			final MessageDispatchSender fileStoreMessageDispatcher = new MessageDispatchSender();
 			m_fileStore.registerMessageHandlers(fileStoreMessageDispatcher);
+
+			// This is code for keep the last cached file.
+			CacheHighWaterMark cacheHighWaterMark = createCacheHighWaterMark(directory);
+			if (cacheHighWaterMark != null) {
+				fileStoreMessageDispatcher.send(new DistributionCacheCheckpointMessage(cacheHighWaterMark));
+			}
+			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
+					.getCacheHighWaterMark()));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_consoleListener.registerMessageHandlers(messageDispatcher);
@@ -533,6 +542,20 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 
 				}
 			};
+		}
+
+		public CacheHighWaterMark createCacheHighWaterMark(File directory) {
+			long cacheWatermark = -1;
+			Directory previouslyUsedDirectory = null;
+			try {
+				previouslyUsedDirectory = new Directory(new File(directory, "current"));
+				for (File each : previouslyUsedDirectory.listContents(TrueFileFilter.TRUE)) {
+					cacheWatermark = Math.min(each.lastModified(), cacheWatermark);
+				}
+				return CacheHighWaterMarkFactory.createCacheHighWaterMark(previouslyUsedDirectory, cacheWatermark);
+			} catch (Directory.DirectoryException e) {
+				return null;
+			}
 		}
 
 		public void start() {

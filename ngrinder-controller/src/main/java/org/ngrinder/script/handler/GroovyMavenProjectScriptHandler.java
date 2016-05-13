@@ -13,13 +13,17 @@
  */
 package org.ngrinder.script.handler;
 
+import static org.apache.commons.io.FileUtils.deleteQuietly;
 import static org.ngrinder.common.util.CollectionUtils.buildMap;
 import static org.ngrinder.common.util.CollectionUtils.newArrayList;
 import static org.ngrinder.common.util.CollectionUtils.newHashMap;
 import static org.ngrinder.common.util.ExceptionUtils.processException;
+import static org.ngrinder.common.util.FileUtils.syncLastModifiedTime;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -145,13 +149,22 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 		MavenCli cli = new MavenCli();
 		processingResult.println("\nCopy dependencies by running 'mvn dependency:copy-dependencies"
 				+ " -DoutputDirectory=./lib -DexcludeScope=provided'");
-
+		File lib = new File(distDir.getAbsolutePath(), "lib");
+		Collection<File> existingFiles = getSubFiles(lib);
 		int result = cli.doMain(new String[]{ // goal specification
 				"dependency:copy-dependencies", // run dependency goal
 				"-DoutputDirectory=./lib", // to the lib folder
 				"-DexcludeScope=provided" // but exclude the provided
 				// library
 		}, distDir.getAbsolutePath(), processingResult, processingResult);
+
+		Collection<File> newFiles = getSubFiles(lib);
+		newFiles.removeAll(existingFiles);
+		File pomFile = new File(pomPathInSVN);
+		for (File each : newFiles) {
+			syncLastModifiedTime(pomFile, each);
+		}
+
 		boolean success = (result == 0);
 		if (success) {
 			processingResult.printf("\nDependencies in %s was copied.\n", pomPathInSVN);
@@ -161,8 +174,12 @@ public class GroovyMavenProjectScriptHandler extends GroovyScriptHandler impleme
 			LOGGER.info("Dependencies copy in {} is failed.", pomPathInSVN);
 		}
 		// Then it's not necessary to include pom.xml anymore.
-		FileUtils.deleteQuietly(new File(distDir, "pom.xml"));
+		deleteQuietly(new File(distDir, "pom.xml"));
 		processingResult.setSuccess(result == 0);
+	}
+
+	private Collection<File> getSubFiles(File folder) {
+		return folder.exists() && folder.isDirectory() ? FileUtils.listFiles(folder, null, true) : new ArrayList<File>();
 	}
 
 	@Override

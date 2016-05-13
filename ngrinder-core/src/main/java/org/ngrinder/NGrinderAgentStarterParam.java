@@ -40,7 +40,7 @@ public class NGrinderAgentStarterParam {
 	public String command = "start";
 
 	public NGrinderModeParam getModeParam() {
-		return NGrinderModeParam.valueOf(mode);
+		return (mode == null) ? NGrinderModeParam.agent : NGrinderModeParam.valueOf(mode);
 	}
 
 	/**

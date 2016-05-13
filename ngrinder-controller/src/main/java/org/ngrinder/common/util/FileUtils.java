@@ -23,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
+import static org.apache.commons.io.IOUtils.closeQuietly;
+
 /**
  * Convenient File utilities.
  *
@@ -49,9 +51,22 @@ public abstract class FileUtils {
 		} catch (IOException e) {
 			LOGGER.error("error while writing {}", resourcePath, e);
 		} finally {
-			IOUtils.closeQuietly(io);
-			IOUtils.closeQuietly(fos);
+			closeQuietly(io);
+			closeQuietly(fos);
 		}
+	}
 
+	/**
+	 * Set the target's last modified time same as src's last modified time.
+	 *
+	 * @param src src file from which the last modified time is retrieved
+	 * @param target target file to which the last modified time is applied
+	 */
+	public static void syncLastModifiedTime(File src, File target) {
+		setLastModifiedTime(src.lastModified(), target);
+	}
+
+	public static void setLastModifiedTime(long time, File target) {
+		target.setLastModified(time);
 	}
 }

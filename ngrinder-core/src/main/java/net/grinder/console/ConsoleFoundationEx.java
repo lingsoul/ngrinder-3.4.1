@@ -31,6 +31,7 @@ import net.grinder.console.communication.DistributionControlImplementation;
 import net.grinder.console.communication.ProcessControlImplementation;
 import net.grinder.console.communication.server.DispatchClientCommands;
 import net.grinder.console.distribution.FileDistributionImplementation;
+import net.grinder.console.distribution.FileDistributionImplementationEx;
 import net.grinder.console.distribution.WireFileDistribution;
 import net.grinder.console.model.*;
 import net.grinder.console.synchronisation.WireDistributedBarriers;
@@ -100,7 +101,7 @@ public class ConsoleFoundationEx {
 		m_container.addComponent(m_timer);
 
 		//noinspection RedundantArrayCreation
-		m_container.addComponent(FileDistributionImplementation.class, FileDistributionImplementation.class,
+		m_container.addComponent(FileDistributionImplementationEx.class, FileDistributionImplementationEx.class,
 						new Parameter[] { new ComponentParameter(DistributionControlImplementation.class),
 								new ComponentParameter(ProcessControlImplementation.class),
 								new ConstantParameter(properties.getDistributionDirectory()),
