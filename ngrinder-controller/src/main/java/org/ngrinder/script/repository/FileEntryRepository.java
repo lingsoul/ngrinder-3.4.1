@@ -245,6 +245,7 @@ public class FileEntryRepository {
 			for (String name : fileProperty.nameSet()) {
 				script.getProperties().put(name, fileProperty.getStringValue(name));
 			}
+			script.setLastModifiedDate(lastRevisionedEntry.getDate());
 			script.setFileType(FileType.getFileTypeByExtension(FilenameUtils.getExtension(script.getFileName())));
 			if (script.getFileType().isEditable()) {
 				String autoDetectedEncoding = EncodingUtils.detectEncoding(byteArray, "UTF-8");

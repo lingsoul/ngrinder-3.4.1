@@ -53,6 +53,7 @@ import org.ngrinder.infra.AgentConfig;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -516,8 +517,7 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			if (cacheHighWaterMark != null) {
 				fileStoreMessageDispatcher.send(new DistributionCacheCheckpointMessage(cacheHighWaterMark));
 			}
-			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, m_fileStore
-					.getCacheHighWaterMark()));
+			m_sender.send(new AgentProcessReportMessage(ProcessReport.STATE_STARTED, cacheHighWaterMark));
 
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_consoleListener.registerMessageHandlers(messageDispatcher);
@@ -549,8 +549,8 @@ public class AgentImplementationEx implements Agent, AgentConstants {
 			Directory previouslyUsedDirectory = null;
 			try {
 				previouslyUsedDirectory = new Directory(new File(directory, "current"));
-				for (File each : previouslyUsedDirectory.listContents(TrueFileFilter.TRUE)) {
-					cacheWatermark = Math.min(each.lastModified(), cacheWatermark);
+				for (File each : previouslyUsedDirectory.listContents(TrueFileFilter.TRUE, false, true)) {
+					cacheWatermark = Math.max(each.lastModified(), cacheWatermark);
 				}
 				return CacheHighWaterMarkFactory.createCacheHighWaterMark(previouslyUsedDirectory, cacheWatermark);
 			} catch (Directory.DirectoryException e) {
