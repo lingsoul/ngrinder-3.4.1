@@ -1,29 +1,24 @@
 FROM jeanblanchard/java
 MAINTAINER JunHo Yoon "junoyoon@gmail.com"
 
-RUN apk update; apk add curl
+RUN apk update; apk add curl bash
 
 # Set up environment variables
-ENV BASE_DIR=/opt
-
-# Download ngrinder controller file
-RUN mkdir -p $BASE_DIR/ngrinder-controller
+ENV BASE_DIR=/opt \
+    NGRINDER_HOME=/opt/ngrinder-controller
 
 # Expose ports
 EXPOSE 80 16001 12000-12009
 
-# Volume mappting
-VOLUME ["/root/.ngrinder"]
+# Volume mapping
+VOLUME $NGRINDER_HOME
 
-ADD http://www.h2database.com/h2-2014-04-05.zip ${BASE_DIR}
-RUN cd ${BASE_DIR} && unzip h2*
-
-# Copy initial excution script
+# Copy initial execution script
 ADD scripts /scripts
 
 # Copy final binary
-ADD binary/*.war ${BASE_DIR}/ngrinder-controller/
+ADD binary/*.war ${BASE_DIR}
 
-# Excution
+# Execution
 CMD ["/scripts/run.sh"]
 
