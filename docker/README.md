@@ -27,13 +27,13 @@ Install docker 1.5.0 or above  on your host.
 Pull the ngrinder/controller image.
 
 ```
-$ docker pull ngrinder-controller:3.4
+$ docker pull ngrinder/controller:3.4
 ```
 
 Start controller.
 
 ```
-docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder-controller:3.4
+docker run -d -v ~/ngrinder-controller:/opt/ngrinder-controller -p 80:80 -p 16001:16001 -p 12000-12009:12000-12009 ngrinder/controller:3.4
 ``` 
 
 The controller creates a data folder under /opt/ngrinder-controller to maintain test history and configuration data. In order to keep the data persistently, you should map the folder /opt/ngrinder-controller on the container to a folder on your host . 
