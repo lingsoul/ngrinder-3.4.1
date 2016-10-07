@@ -11,13 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ngrinder;
+package org.ngrinder.starter;
 
 import com.beust.jcommander.*;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.webapp.WebAppContext;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -209,41 +205,7 @@ public class NGrinderControllerStarter {
 
 
 	private void run() {
-		Server server = new Server(port);
-		ServerConnector connector = new ServerConnector(server);
-		// Set some timeout options to make debugging easier.
-		connector.setIdleTimeout(1000 * 60 * 60);
-		connector.setSoLingerTime(-1);
-		connector.setPort(port);
-		server.setConnectors(new Connector[]{connector});
 
-		WebAppContext context = new WebAppContext();
-		final File tmpDir = new File(resolveHome(), "tmp");
-		//noinspection ResultOfMethodCallIgnored
-		tmpDir.mkdirs();
-
-		context.setTempDirectory(tmpDir);
-		context.setServer(server);
-		if (!contextPath.startsWith("/")) {
-			contextPath = "/" + contextPath;
-		}
-		context.setContextPath(contextPath);
-
-		String war = getWarName();
-		context.setWar(war);
-		server.setHandler(context);
-		try {
-			server.start();
-			//noinspection StatementWithEmptyBody
-			while (System.in.read() != 'q') {
-				Thread.sleep(1000);
-			}
-			server.stop();
-			server.join();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			System.exit(-1);
-		}
 	}
 
 	private static String getWarName() {
@@ -307,7 +269,6 @@ public class NGrinderControllerStarter {
 		final ClusterMode clusterMode = ClusterMode.valueOf(server.clusterMode);
 		clusterMode.parseArgs(unknownOptions.toArray(new String[unknownOptions.size()]));
 		System.getProperties().putAll(server.params);
-		server.run();
 	}
 
 	private static String getRunningCommand() {

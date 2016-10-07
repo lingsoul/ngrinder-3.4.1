@@ -1,8 +1,9 @@
-package org.ngrinder;
+package org.ngrinder.starter;
 
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.ngrinder.starter.NGrinderControllerStarter;
 
 
 @Ignore
