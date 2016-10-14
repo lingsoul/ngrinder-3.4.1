@@ -1,0 +1,13 @@
+ngrinder:
+  version: default
+
+spring:
+  freemarker:
+    prefix: /
+    suffix: .ftl
+    request-context-attribute: req
+    cache: true
+    expose-spring-macro-helpers: true
+    content-type: text/html;charset=UTF-8
+
+

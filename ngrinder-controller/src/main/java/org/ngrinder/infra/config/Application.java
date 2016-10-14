@@ -43,47 +43,22 @@ public class Application extends SpringBootServletInitializer {
 		servletContext.addListener(new ContextLoaderListener());
 		servletContext.addListener(new HttpSessionEventPublisher());
 		servletContext.addListener(new ShutdownListener());
-		servletContext.addListener(new ApplicationListenerBean());
 		super.onStartup(servletContext);
 	}
 
 	@Bean
-	public DispatcherServlet dispatcherServlet() {
-		return new DispatcherServlet();
-	}
-
-	@Bean
-	public ServletRegistrationBean defaultDispatcherServlet(
-		DispatcherServlet dispatcherServlet) {
-		String[] urlMappings = {
-			"*.js", "*.png", "*.jpg", "*.swf", "*.csv", "*.css", "*.html",
-			"*.gif", "*.ico"};
-		return new ServletRegistrationBean(dispatcherServlet, urlMappings);
-	}
-
-	@Bean
 	public ServletRegistrationBean appServlet() {
-		Redirect404DispatcherServlet redirect404DispatcherServlet = new Redirect404DispatcherServlet();
-		XmlWebApplicationContext applicationContext = new XmlWebApplicationContext();
-
-		applicationContext.setConfigLocation("classpath:servlet-context.xml");
-		redirect404DispatcherServlet.setApplicationContext(applicationContext);
-
-		ServletRegistrationBean appServletRegistrationBean
-			= new ServletRegistrationBean(redirect404DispatcherServlet, "/*");
-		appServletRegistrationBean.setLoadOnStartup(1);
-		appServletRegistrationBean.setName("appServlert");
-
-		return appServletRegistrationBean;
+		ServletRegistrationBean redirect404DispatcherServlet = new ServletRegistrationBean(new Redirect404DispatcherServlet(), "/*");
+		redirect404DispatcherServlet.setLoadOnStartup(1);
+		redirect404DispatcherServlet.setName("appServlert");
+		return redirect404DispatcherServlet;
 	}
 
 	@Bean
 	public ServletRegistrationBean svnDavServlet() {
-		ServletRegistrationBean SvnDavServletRegistrationBean = new ServletRegistrationBean(new HttpRequestHandlerServlet(), "/*");
-
+		ServletRegistrationBean SvnDavServletRegistrationBean = new ServletRegistrationBean(new HttpRequestHandlerServlet(), "/svn/*");
 		SvnDavServletRegistrationBean.setLoadOnStartup(1);
 		SvnDavServletRegistrationBean.setName("svnDavServlet");
-
 		return SvnDavServletRegistrationBean;
 	}
 
