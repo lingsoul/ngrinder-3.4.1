@@ -4,13 +4,7 @@
 	   xsi:schemaLocation="
    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
-	<!-- Scans the classpath of this application for @Components to deploy as beans -->
-	<context:component-scan base-package="org.ngrinder">
-		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
-	</context:component-scan>
 
-	<import resource="applicationContext-springdata.xml"/>
-	<import resource="applicationContext-security.xml"/>
 	<import resource="applicationContext-ehcache.xml"/>
 	<import resource="applicationContext-task.xml"/>
 	<import resource="applicationContext-external.xml"/>
