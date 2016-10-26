@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.infra.config;
 
@@ -29,10 +29,10 @@ import org.ngrinder.common.constant.ClusterConstants;
 import org.ngrinder.common.util.Preconditions;
 import org.ngrinder.infra.logger.CoreLogger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachingConfigurerSupport;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,8 +52,9 @@ import static org.ngrinder.common.util.TypeConvertUtils.cast;
  * @since 3.1
  */
 @SuppressWarnings("SpellCheckingInspection")
-@Component
-public class DynamicCacheConfig implements ClusterConstants {
+@EnableCaching
+@org.springframework.context.annotation.Configuration
+public class DynamicCacheConfig extends CachingConfigurerSupport implements ClusterConstants {
 
 	@Autowired
 	private Config config;
@@ -63,9 +64,9 @@ public class DynamicCacheConfig implements ClusterConstants {
 	 *
 	 * @return EhCacheCacheManager bean
 	 */
-	@SuppressWarnings("rawtypes")
-	@Bean(name = "cacheManager")
-	public EhCacheCacheManager dynamicCacheManager() {
+
+	@Override
+	public org.springframework.cache.CacheManager cacheManager() {
 		EhCacheCacheManager cacheManager = new EhCacheCacheManager();
 		Configuration cacheManagerConfig;
 		InputStream inputStream = null;
@@ -134,12 +135,12 @@ public class DynamicCacheConfig implements ClusterConstants {
 		return peerListenerConfig;
 	}
 
-	String getCacheName() {
+	private String getCacheName() {
 		return "cacheManager";
 	}
 
 
-	public Pair<NetworkUtils.IPPortPair, String> createAutoDiscoveryCacheProperties() {
+	Pair<NetworkUtils.IPPortPair, String> createAutoDiscoveryCacheProperties() {
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		NetworkUtils.IPPortPair local = new NetworkUtils.IPPortPair(getClusterHostName(), getClusterPort());
 		String peerProperty = "peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,multicastGroupPort=4446, timeToLive=32";
@@ -147,7 +148,7 @@ public class DynamicCacheConfig implements ClusterConstants {
 				peerProperty);
 	}
 
-	public Pair<NetworkUtils.IPPortPair, String> createManualDiscoveryCacheProperties(List<String> replicatedCacheNames) {
+	Pair<NetworkUtils.IPPortPair, String> createManualDiscoveryCacheProperties(List<String> replicatedCacheNames) {
 		int clusterListenerPort = getClusterPort();
 		// rmiUrls=//10.34.223.148:40003/distributed_map|//10.34.63.28:40003/distributed_map
 		List<String> uris = new ArrayList<String>();

@@ -41,7 +41,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
-
 import org.springframework.security.web.authentication.*;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
@@ -110,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	 * @return SecurityExpressionHandler
 	 */
 	@Bean
-	public SecurityExpressionHandler methodSecurityExpressionHandler() {
+	public SecurityExpressionHandler<org.aopalliance.intercept.MethodInvocation> methodSecurityExpressionHandler() {
 		DefaultMethodSecurityExpressionHandler defaultMethodSecurityExpressionHandler = new DefaultMethodSecurityExpressionHandler();
 		GlobalMethodSecurityConfiguration globalMethodSecurityConfiguration = new GlobalMethodSecurityConfiguration();
 		ArrayList<MethodSecurityExpressionHandler> handlers = new ArrayList<MethodSecurityExpressionHandler>();
@@ -136,7 +135,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	 */
 	@Bean
 	public UnanimousBased svnAccessDecisionManager() {
-		List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<AccessDecisionVoter<? extends Object>>();
+		List<AccessDecisionVoter<?>> decisionVoters = new ArrayList<AccessDecisionVoter<?>>();
 		decisionVoters.add(authenticatedVoter());
 		decisionVoters.add(userSwitchPermissionVoter);
 		return new UnanimousBased(decisionVoters);
@@ -144,7 +143,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Bean
 	public AffirmativeBased accessDecisionManager() {
-		List<AccessDecisionVoter<? extends Object>> decisionVoters = new ArrayList<AccessDecisionVoter<? extends Object>>();
+		List<AccessDecisionVoter<?>> decisionVoters = new ArrayList<AccessDecisionVoter<?>>();
 		decisionVoters.add(authenticatedVoter());
 		return new AffirmativeBased(decisionVoters);
 	}
@@ -192,8 +191,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 
 	@Bean
-	public UserDetailsByNameServiceWrapper userDetailsServiceWrapper() {
-		UserDetailsByNameServiceWrapper userDetailsByNameServiceWrapper = new UserDetailsByNameServiceWrapper();
+	public UserDetailsByNameServiceWrapper<org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken> userDetailsServiceWrapper() {
+		UserDetailsByNameServiceWrapper<org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken> userDetailsByNameServiceWrapper = new UserDetailsByNameServiceWrapper<org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken>();
 		userDetailsByNameServiceWrapper.setUserDetailsService(ngrinderUserDetailsService);
 		return userDetailsByNameServiceWrapper;
 	}
@@ -201,6 +200,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	@Bean
 	public NGrinderAuthenticationPreAuthProvider ngrinderPreAuthProvider() {
 		NGrinderAuthenticationPreAuthProvider nGrinderAuthenticationPreAuthProvider = new NGrinderAuthenticationPreAuthProvider();
+		UserDetailsByNameServiceWrapper<org.springframework.security.core.Authentication> userDetailsByNameServiceWrapper = new UserDetailsByNameServiceWrapper<org.springframework.security.core.Authentication>();
+		userDetailsByNameServiceWrapper.setUserDetailsService(ngrinderUserDetailsService);
 		nGrinderAuthenticationPreAuthProvider.setPreAuthenticatedUserDetailsService(userDetailsServiceWrapper());
 		nGrinderAuthenticationPreAuthProvider.setUserService(userService);
 		return nGrinderAuthenticationPreAuthProvider;
@@ -215,8 +216,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	@Bean
 	public LoginUrlAuthenticationEntryPoint authenticationProcessingFilterEntryPoint() {
-		LoginUrlAuthenticationEntryPoint loginUrlAuthenticationEntryPoint = new LoginUrlAuthenticationEntryPoint("/login");
-		return loginUrlAuthenticationEntryPoint;
+		return new LoginUrlAuthenticationEntryPoint("/login");
 	}
 
 	@Bean
@@ -252,7 +252,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
 	/**
 	 * configure static resource and login page
-	 * @param web
+	 * @param web WebSecurity
 	 * @throws Exception
 	 */
 	@Override
@@ -271,7 +271,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	/**
 	 * configure SVN, used for shared test report page and accessible from no authorized users
 	 * and delegatingAuthenticationEntryPoint
-	 * @param http
+	 * @param http HttpSecurity
 	 * @throws Exception
 	 */
 	@Override

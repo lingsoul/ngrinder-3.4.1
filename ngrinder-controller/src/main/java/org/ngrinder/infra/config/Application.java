@@ -13,7 +13,6 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.context.ContextLoaderListener;
@@ -28,7 +27,6 @@ import javax.servlet.ServletException;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootApplication
-@ImportResource(value = {"classpath:applicationContext.xml"})
 @ComponentScan(
 	basePackages = {"org.ngrinder"},
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = org.springframework.stereotype.Repository.class)}

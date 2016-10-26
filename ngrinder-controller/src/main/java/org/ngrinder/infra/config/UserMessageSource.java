@@ -1,15 +1,6 @@
 package org.ngrinder.infra.config;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
-import java.text.MessageFormat;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-
+import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.ngrinder.common.util.EncodingUtils;
@@ -19,12 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.AbstractMessageSource;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Maps;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Custom user defined message source handler. User can defines its own message translations in
  * ${NGRINDER_HOME}/messages/messages_{langcode}.properties.
- * 
+ *
  * @author JunHo Yoon
  * @since 3.1
  */
@@ -40,15 +38,15 @@ public class UserMessageSource extends AbstractMessageSource {
 
 	/**
 	 * Message key holder with local and code.
-	 * 
+	 *
 	 * @author JunHo Yoon
 	 * @since 3.1
 	 */
 	static class LocaleAndCode {
-		
+
 		/**
 		 * Constructor.
-		 * 
+		 *
 		 * @param locale locale
 		 * @param code code
 		 */
@@ -113,7 +111,7 @@ public class UserMessageSource extends AbstractMessageSource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see org.springframework.context.support.AbstractMessageSource#resolveCode(java.lang.String,
 	 * java.util.Locale)
 	 */
