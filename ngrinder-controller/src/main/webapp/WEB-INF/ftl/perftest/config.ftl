@@ -37,7 +37,7 @@
 							append_prefix="perfTest.config.max" append='<span id="maxAgentCount"></span>' />
 					</@control_group>
 				</div>
-	
+
 				<div class="span2">
 					<#if clustered == true>
 						<@control_group name="region" label_message_key="perfTest.config.region"
@@ -58,7 +58,7 @@
 				</div>
 			</div>
 
-			<@control_group name="vuserPerAgent" label_message_key="perfTest.config.vuserPerAgent" 
+			<@control_group name="vuserPerAgent" label_message_key="perfTest.config.vuserPerAgent"
 				data_step="5" data_intro="intro.config.basic.vuser">
 				<@input_append name="vuserPerAgent"
 					value="${(test.vuserPerAgent)!1}"
@@ -146,7 +146,7 @@
 			</div>
 			<div id="detail_config_section" style='display:none' >
 				<div class="row">
-					<div class="span3">
+					<div class="span3" title='<@spring.message "perfTest.config.samplingInterval.help"/>'>
 						<@control_group name="samplingInterval" label_message_key="perfTest.config.samplingInterval">
 							<#assign samplingIntervalArray = [1,2,3,4,5,10,30,60]>
 							<select class="select-item" id="sampling_interval" name="samplingInterval">
@@ -205,7 +205,7 @@
 	<div class="span6 intro" data-step="11" data-intro="<@spring.message 'intro.config.rampup'/>">
 		<fieldset>
 			<legend>
-                <span>
+                <span title='<@spring.message "perfTest.config.rampUp.help"/>'>
 	               	<input type="checkbox" id="use_ramp_up" name="useRampUp" style="vertical-align: middle; margin-bottom:5px"
 					<#if test.useRampUp == true>checked</#if> />
 					<@spring.message "perfTest.config.rampUp.enable"/>
