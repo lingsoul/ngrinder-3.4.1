@@ -9,11 +9,11 @@
 <h6 id="mem_usage_chart_header">Memory(%)，建议值：小于80%</h6>
 <div class="chart" id="mem_usage_chart"></div>
 
-<h6 id="TxBytesPerSec_chart_header">Network Trans(Byte/s)</h6>
-<div class="chart" id="TxBytesPerSec_chart"></div>
+<h6 id="received_byte_per_sec_chart_header">Received (byte/s)</h6>
+<div class="chart" id="received_byte_per_sec_chart"></div>
 
-<h6 id="RxBytesPerSec_chart_header">Network Recv(Byte/s)</h6>
-<div class="chart" id="RxBytesPerSec_chart"></div>
+<h6 id="sent_byte_per_sec_chart_header">Sent (byte/s)</h6>
+<div class="chart" id="sent_byte_per_sec_chart"></div>
 
 <h6 id="diskbusy_chart_header">DiskBusy(%)</h6>
 <div class="chart" id="diskbusy_chart"></div>
@@ -54,10 +54,8 @@
 			drawChart('mem_usage_chart', [data.memused], formatPercentage, interval);
 			// DiskBusy
 			drawChart('diskbusy_chart', [data.diskbusy], formatPercentage, interval);
-			// Network Trans(Byte/s)
-			drawChart('TxBytesPerSec_chart', [data.TxBytesPerSec], formatNetwork, interval);
-			// Network Recv(Byte/s)
-			drawChart('RxBytesPerSec_chart', [data.RxBytesPerSec], formatNetwork, interval);
+			drawChart("received_byte_per_sec_chart", [data.received], formatNetwork, interval);
+			drawChart("sent_byte_per_sec_chart", [data.sent], formatNetwork, interval);
 			// CPU_Load
 			drawChart('load_chart', [data.load], formatNetwork, interval);
 			// CPU_Wait
