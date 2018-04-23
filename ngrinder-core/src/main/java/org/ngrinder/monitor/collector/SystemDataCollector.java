@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.collector;
 
@@ -33,6 +33,7 @@ import java.io.IOException;
  *
  * @author Mavlarn
  * @since 2.0
+ * @modify lingj
  */
 public class SystemDataCollector extends DataCollector implements MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemDataCollector.class);
@@ -93,7 +94,11 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			//systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			//add by lingj
+			//修改cpu使用率为1-idle%
+			systemInfo.setCPUUsedPercentage((float) (1-sigar.getCpuPerc().getIdle()) * 100);
+
 			Cpu cpu = sigar.getCpu();
 			systemInfo.setTotalCpuValue(cpu.getTotal());
 			systemInfo.setIdleCpuValue(cpu.getIdle());
@@ -102,8 +107,22 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
+
+			//add by lingj 新增cpuWaitcpu等待率,memUsedPercentage内存使用率,load,diskUtil数据收集
+			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100);
+			systemInfo.setMemUsedPercentage(mem.getUsedPercent());
+			double load = sigar.getLoadAverage()[0];
+			systemInfo.setLoad(load);
+//			long read = 0l;
+//			long write = 0l;
+//          systemInfo.setRead(read / 1024L);
+//          systemInfo.setWrite(write / 1024L);
+			if (systemInfo.getSystem() == SystemInfo.System.LINUX) {
+				IoUsageCollector iousage = new IoUsageCollector();
+				systemInfo.setDiskUtil(iousage.getIoUsage());
+			}
 		} catch (Throwable e) {
-			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
+			LOGGER.debug("Error while getting system perf data:{}", e);
 			LOGGER.debug("Error trace is ", e);
 		}
 		prev = systemInfo;

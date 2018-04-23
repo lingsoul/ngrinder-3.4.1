@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.share.domain;
 
@@ -27,6 +27,7 @@ import org.ngrinder.common.util.DateUtils;
  *
  * @author Mavlarn
  * @since 2.0
+ * @modify lingj
  */
 public class SystemInfo extends MonitorInfo implements Serializable {
 
@@ -35,8 +36,10 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	/**
 	 * Header field of monitor status fields.
 	 */
+	//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil字段拼接
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-			+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,customValues";
+		+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,cpuWait,memUsedPercentage,load,diskUtil,customValues";
+
 
 	public boolean isParsed() {
 		return true;
@@ -67,6 +70,25 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 
 	protected String customValues;
 
+	//add by lingj
+	// load
+	private double load;
+
+	//cpu等待率
+	private float cpuWait;
+
+	// 磁盘读
+	private long read;
+
+	// 磁盘写
+	private long write;
+
+	// 磁盘读写率
+	private float diskUtil;
+
+	// 内存使用率
+	private double memUsedPercentage;
+
 	@Override
 	public void parse(CompositeData cd) {
 		if (cd == null) {
@@ -82,6 +104,15 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			this.freeMemory = getLong(cd, "freeMemory");
 			this.totalMemory = getLong(cd, "totalMemory");
 			this.cpuUsedPercentage = getFloat(cd, "CPUUsedPercentage");
+
+			//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil等字段定义
+			this.load = getDouble(cd, "load");
+			this.cpuWait = getFloat(cd, "cpuWait");
+			this.read = getLong(cd, "read");
+			this.write = getLong(cd, "write");
+			this.diskUtil = getFloat(cd, "diskUtil");
+			this.memUsedPercentage = getDouble(cd, "memUsedPercentage");
+			//-----------------新增end--------------------
 
 			if (containsKey(cd, "bandWidth")) {
 				CompositeData bandWidth = (CompositeData) getObject(cd, "bandWidth");
@@ -178,6 +209,59 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		this.customValues = customValues;
 	}
 
+	//新增get、set方法
+	public double getLoad() {
+		return load;
+	}
+
+	public void setLoad(double load) {
+		this.load = load;
+	}
+
+	public float getCpuWait() {
+		return cpuWait;
+	}
+
+	public void setCpuWait(float cpuWait) {
+		this.cpuWait = cpuWait;
+	}
+
+	public long getRead() {
+		return read;
+	}
+
+	public void setRead(long read) {
+		this.read = read;
+	}
+
+	public long getWrite() {
+		return write;
+	}
+
+	public void setWrite(long write) {
+		this.write = write;
+	}
+
+	public float getDiskUtil() {
+		return diskUtil;
+	}
+
+	public void setDiskUtil(float diskUtil) {
+		this.diskUtil = diskUtil;
+	}
+
+	public double getMemUsedPercentage() {
+		return memUsedPercentage;
+	}
+
+	public void setMemUsedPercentage(double memUsedPercentage) {
+		this.memUsedPercentage = memUsedPercentage;
+	}
+
+	public long getIdleCpuValue() {
+		return idleCpuValue;
+	}
+
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this);
@@ -193,9 +277,14 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		sb.append(ip).append(",").append(system).append(",");
 		sb.append(DateUtils.getCollectTimeInLong(new Date(getCollectTime()))).append(",").append(freeMemory).append(",");
 		sb.append(totalMemory).append(",").append(cpuUsedPercentage);
+
 		if (bandWidth != null) {
 			sb.append(",").append(bandWidth.getReceivedPerSec()).append(",").append(bandWidth.getSentPerSec());
 		}
+
+		//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil的字段拼接
+		sb.append(",").append(cpuWait).append(",").append(memUsedPercentage).append(",").append(load).append(",").append(diskUtil);
+
 		if (customValues != null) {
 			sb.append(",").append(customValues);
 		}
@@ -219,12 +308,18 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		@Override
 		public String toRecordString() {
 			StringBuilder sb = new StringBuilder();
+			//ip、system
 			sb.append("null").append(",").append("null").append(",");
+			//collectTime,freeMemory
 			sb.append("null").append(",").append("null").append(",");
+			//totalMemory,cpuUsedPercentage
 			sb.append("null").append(",").append("null");
 			if (bandWidth != null) {
 				sb.append(",").append("null").append(",").append("null");
 			}
+			//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil的字段拼接
+			sb.append(",").append("null").append(",").append("null").append(",").append("null").append(",").append("null");
+
 			if (customValues != null) {
 				int valueCount = StringUtils.countMatches(customValues, ",") + 1;
 				for (int i = 0; i < valueCount; i++) {

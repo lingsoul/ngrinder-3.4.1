@@ -14,7 +14,7 @@
 package net.grinder.util;
 
 import HTTPClient.NVPair;
-import com.csvreader.CsvReader;
+import net.grinder.util.CsvReader;
 import net.grinder.common.GrinderProperties;
 import net.grinder.script.Grinder;
 import net.grinder.script.InternalScriptContext;

@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package net.grinder;
 
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Timer;
@@ -71,7 +72,7 @@ public class AgentController implements Agent, AgentConstants {
 	private final AgentControllerServerListener m_agentControllerServerListener;
 	private FanOutStreamSender m_fanOutStreamSender;
 	private final AgentControllerConnectorFactory m_connectorFactory = new AgentControllerConnectorFactory(
-			ConnectionType.AGENT);
+		ConnectionType.AGENT);
 	private final Condition m_eventSyncCondition;
 	private volatile AgentControllerState m_state = AgentControllerState.STARTED;
 
@@ -123,7 +124,7 @@ public class AgentController implements Agent, AgentConstants {
 		m_fanOutStreamSender = new FanOutStreamSender(GrinderConstants.AGENT_CONTROLLER_FANOUT_STREAM_THREAD_COUNT);
 		m_timer = new Timer(false);
 		AgentDaemon agent = new AgentDaemon(checkNotNull(agentConfig,
-				"agent.conf should be provided before agent daemon start."));
+			"agent.conf should be provided before agent daemon start."));
 		try {
 			while (true) {
 				do {
@@ -135,7 +136,7 @@ public class AgentController implements Agent, AgentConstants {
 							LOGGER.info("Connected to agent controller server at {}", connector.getEndpointAsString());
 						} catch (CommunicationException e) {
 							LOGGER.error("Error while connecting to agent controller server at {}",
-									connector.getEndpointAsString());
+								connector.getEndpointAsString());
 							return;
 						}
 					}
@@ -178,7 +179,12 @@ public class AgentController implements Agent, AgentConstants {
 						@Override
 						public void shutdownAgent() {
 							LOGGER.info("Send log for {}", testId);
-							sendLog(conCom, testId);
+							try {
+								sendLog(conCom, testId);
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 							m_state = AgentControllerState.READY;
 							m_connectionPort = 0;
 						}
@@ -226,7 +232,7 @@ public class AgentController implements Agent, AgentConstants {
 								agentDownloadGrinderMessage.setNext(message.getOffset());
 							} else {
 								throw new CommunicationException("Error while getting the agent package from " +
-										"controller");
+									"controller");
 							}
 						} else {
 							throw new CommunicationException("Error while getting the agent package from controller");
@@ -242,7 +248,7 @@ public class AgentController implements Agent, AgentConstants {
 						agentUpdateHandler = null;
 						retryCount = 0;
 						LOGGER.info("same or old agent version {} is sent for update. skip this.",
-								message.getVersion());
+							message.getVersion());
 						m_state = AgentControllerState.READY;
 					} catch (Exception e) {
 						retryCount = 0;
@@ -268,8 +274,14 @@ public class AgentController implements Agent, AgentConstants {
 		}
 	}
 
-	private void sendLog(ConsoleCommunication consoleCommunication, String testId) {
+	private void sendLog(ConsoleCommunication consoleCommunication, String testId) throws IOException {
 		File logFolder = new File(agentConfig.getHome().getLogDirectory(), testId);
+		File recentLogFolder = new File(agentConfig.getHome().getLogDirectory(), "recent_log");
+		//add by lingj,加入日志文件夹的判断，如果文件存在，进行删除
+		if (recentLogFolder.exists()) {
+			FileUtils.deleteQuietly(recentLogFolder);
+		}
+
 		if (!logFolder.exists()) {
 			return;
 		}
@@ -290,11 +302,14 @@ public class AgentController implements Agent, AgentConstants {
 			logFiles = new File[]{logFiles[0]};
 		}
 		final byte[] compressedLog = LogCompressUtils.compress(logFiles,
-				Charset.defaultCharset(), Charset.forName("UTF-8")
+			Charset.defaultCharset(), Charset.forName("UTF-8")
 		);
 		consoleCommunication.sendMessage(new LogReportGrinderMessage(testId, compressedLog, new AgentAddress(m_agentIdentity)));
 		// Delete logs to clean up
 		if (!agentConfig.getAgentProperties().getPropertyBoolean(PROP_AGENT_KEEP_LOGS)) {
+			//add by lingj,将最近一次日志复制至recentLogFolder文件夹下
+			FileUtils.copyDirectory(logFolder,recentLogFolder);
+
 			LOGGER.info("Clean up the perftest logs");
 			FileUtils.deleteQuietly(logFolder);
 		}
@@ -366,7 +381,7 @@ public class AgentController implements Agent, AgentConstants {
 			m_sender = ClientSender.connect(receiver);
 
 			m_sender.send(new AgentControllerProcessReportMessage(AgentControllerState.STARTED, getSystemDataModel(),
-					m_connectionPort, version));
+				m_connectionPort, version));
 			final MessageDispatchSender messageDispatcher = new MessageDispatchSender();
 			m_agentControllerServerListener.registerMessageHandlers(messageDispatcher);
 

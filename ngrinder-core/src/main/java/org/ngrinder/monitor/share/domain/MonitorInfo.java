@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.share.domain;
 
@@ -19,11 +19,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
- * 
+ *
  * Abstract class for monitor info.
- * 
+ *
  * @author Mavlarn
  * @since 2.0
+ * @modify lingj
  */
 public abstract class MonitorInfo {
 
@@ -36,7 +37,7 @@ public abstract class MonitorInfo {
 
 	/**
 	 * get monitor data from CompositeData.
-	 * 
+	 *
 	 * @param cd
 	 *            is CompositeData got from remote JMX server
 	 */
@@ -48,6 +49,11 @@ public abstract class MonitorInfo {
 
 	protected static String getString(CompositeData cd, String itemName) {
 		return (String) getObject(cd, itemName);
+	}
+
+	//add by lingj
+	protected static Double getDouble(CompositeData cd, String itemName) {
+		return (Double) getObject(cd, itemName);
 	}
 
 	protected static long getLong(CompositeData cd, String itemName) {

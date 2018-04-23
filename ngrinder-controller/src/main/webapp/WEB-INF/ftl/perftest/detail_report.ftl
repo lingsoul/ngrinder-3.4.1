@@ -82,74 +82,79 @@
 <#setting number_format="number">
 <body>
 <div id="wrap">
-<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
-	<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
-</div>
-<div class="container">
-	<form name="download_csv_form" name="download_csv_form">
-		<input type="hidden" id="test_id" name="testId" value="${test.id}">
-	</form>
-	<div class="row">
-		<div class="span3">
-			<table class="table table-bordered compactpadding">
-				<colgroup>
-					<col width="120px">
-					<col>
-				</colgroup>
-				<tr>
-					<th><@spring.message "perfTest.report.totalVusers"/></th>
-					<td><strong>${test.vuserPerAgent * test.agentCount}</strong></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.agent"/></th>
-					<td><span>${test.agentCount}</span>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.process"/><br/><@spring.message "perfTest.report.thread"/></th>
-					<td>${test.processes} / ${test.threads}</td>
-				</tr>
-				<tr>
-					<td colspan="2" class="divider"></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.ignoreSampleCount"/></th>
-					<td><span>${test.ignoreSampleCount}</span></td>
-				</tr>
-				<tr>
-					<td colspan=2></td>
-				</tr>
-				<tr>
-					<th>TPS</th>
-					<td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.peakTPS"/></th>
-					<td><strong>${test.peakTps!""}</strong></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.meantime"/></th>
-					<td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.totalTests"/></th>
-					<td>${(test.tests + test.errors)!""}</td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.successfulTests"/></th>
-					<td>${(test.tests)!""}</td>
-				</tr>
-				<tr>
-					<th><@spring.message "perfTest.report.errors"/></th>
-					<td>${test.errors!""}</td>
-				</tr>
-			</table>
+	<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
+		<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
+	</div>
+	<div class="container">
+		<form name="download_csv_form" name="download_csv_form">
+			<input type="hidden" id="test_id" name="testId" value="${test.id}">
+		</form>
+		<div class="row">
+			<div class="span3">
+				<table class="table table-bordered compactpadding">
+					<colgroup>
+						<col width="120px">
+						<col>
+					</colgroup>
+					<tr>
+						<th><@spring.message "perfTest.report.totalVusers"/></th>
+						<td><strong>${test.vuserPerAgent * test.agentCount}</strong></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.agent"/></th>
+						<td><span>${test.agentCount}</span>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.process"/><br/><@spring.message "perfTest.report.thread"/></th>
+						<td>${test.processes} / ${test.threads}</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="divider"></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.ignoreSampleCount"/></th>
+						<td><span>${test.ignoreSampleCount}</span></td>
+					</tr>
+					<tr>
+						<td colspan=2></td>
+					</tr>
+					<tr>
+						<th>TPS</th>
+						<td><strong><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></strong></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.peakTPS"/></th>
+						<td><strong>${test.peakTps!""}</strong></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.meantime"/></th>
+						<td><span>${(test.meanTestTime!0)?string(",##0.##")}</span>&nbsp;&nbsp; <code>ms</code></td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.totalTests"/></th>
+						<td>${(test.tests + test.errors)!""}</td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.successfulTests"/></th>
+						<td>${(test.tests)!""}</td>
+					</tr>
+					<tr>
+						<th><@spring.message "perfTest.report.errors"/></th>
+						<td>${test.errors!""}</td>
+					</tr>
+				<#-- add by lingj 新增 交易成功率-->
+					<tr>
+						<th><@spring.message "perfTest.report.successRate"/></th>
+						<td>${(test.tests /(test.tests + test.errors)) * 100!""}<code>%</code></td>
+					</tr>
+				</table>
 
-			<div class="well" style="max-width: 340px; padding: 8px 0;">
-				<ul class="nav nav-list">
-					<li class="active pointer-cursor perf  nav-header">
-						<a class="pointer-cursor"><@spring.message "perfTest.report.performanceReport"/></a>
-					</li>
-					<li class="nav-header"><@spring.message "perfTest.report.targetHost"/></li>
+				<div class="well" style="max-width: 340px; padding: 8px 0;">
+					<ul class="nav nav-list">
+						<li class="active pointer-cursor perf  nav-header">
+							<a class="pointer-cursor"><@spring.message "perfTest.report.performanceReport"/></a>
+						</li>
+						<li class="nav-header"><@spring.message "perfTest.report.targetHost"/></li>
 
 					<@list list_items=test.targetHostIP others="no_message" ; targetIP >
 						<li class="monitor pointer-cursor" ip="${targetIP}">
@@ -157,29 +162,29 @@
 						</li>
 					</@list>
 
-				<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
+						<li  class="nav-header"><@spring.message "perfTest.report.plugins"/></li>
 					<@list list_items=plugins others="no_message" ; each >
 						<li class="plugin pointer-cursor" plugin="${each.first}" ip="${each.second}">
 							<a class="pointer-cursor">${each.first?replace("_", " ")} - ${each.second}</a>
 						</li>
 					</@list>
-				</ul>
+					</ul>
+				</div>
 			</div>
-		</div>
-		<div class="span9">
-			<table class="table table-bordered" style="margin-bottom:35px">
-				<colgroup>
-					<col width="120">
-					<col width="220">
-					<col width="120">
-					<col>
-				</colgroup>
-				<tr>
-					<th><@spring.message "perfTest.report.startTime"/></th>
-					<td>${(test.startTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
-					<th><@spring.message "perfTest.report.finishTime"/></th>
-					<td>${(test.finishTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
-				</tr>
+			<div class="span9">
+				<table class="table table-bordered" style="margin-bottom:35px">
+					<colgroup>
+						<col width="120">
+						<col width="220">
+						<col width="120">
+						<col>
+					</colgroup>
+					<tr>
+						<th><@spring.message "perfTest.report.startTime"/></th>
+						<td>${(test.startTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
+						<th><@spring.message "perfTest.report.finishTime"/></th>
+						<td>${(test.finishTime?string('yyyy-MM-dd HH:mm:ss'))!"&nbsp"}</td>
+					</tr>
 				<#if test.threshold == "D">
 				<tr>
 					<th><@spring.message "perfTest.report.duration"/></th>
@@ -203,12 +208,12 @@
 						<td colspan="3">${(test.testComment)!?html?replace('\n', '<br>')}</td>
 					</tr>
 				</#if>
-			</table>
-			<div id="detail_panel">
+				</table>
+				<div id="detail_panel">
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 </div>
 <#include "../common/copyright.ftl">
 
@@ -231,7 +236,7 @@
 		});
 		$pluginMenu.click(function () {
 			$("#detail_panel").load("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report/plugin/" + $(this).attr("plugin") +
-					"?kind=" + $(this).attr("ip"));
+				"?kind=" + $(this).attr("ip"));
 			changActiveLink($(this));
 		});
 
