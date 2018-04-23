@@ -1,4 +1,27 @@
-* nGrinder 3.4 has been released. See https://github.com/naver/ngrinder/releases
+【工具简介】
+    nGrinder是韩国NAVER公司(韩国最大互联网公司NHN旗下搜索引擎网站)基于Grinder二次开发的一个性能测试工具。
+nGrinder 在 Grinder 基础上：
+* 实现多测试并行
+* 基于web的管理
+* 实现cluster（集群）
+* 方便的脚本编辑、管理
+* 支持Groovy的脚本，相对于Jython，可以启用更多的虚拟用户
+* 目标服务器的监控
+* 插件系统扩展
+
+
+【新增功能】修改者： 凌键（lingj1992@163.com）
+* 此版本主要源于nGrinder 3.4.1的基础上进行修改，主要修改点如下：
+* 1、新增收集服务器的资源使用率指标（cpu使用率（100%-idle）、内存使用率、网络传输率（Trans、Recv）、IO使用率、Load、CPU等待率）；
+* 2、新增最近一次执行的日志收集，代理服务器日志路径：/${NGRINDER_HOME}/.ngrinder_agent/log/recent_log；
+* 3、修改快速测试脚本模板的断言方式，新增日志级别设置；
+* 4、修改nGrinder默认配置文件system.conf参数：主要涉及并发数、执行时长等配置；
+
+版本源码地址： https://github.com/lingsoul/ngrinder
+
+版本下载地址： https://github.com/lingsoul/ngrinder/releases
+
+nGrinder源码地址： https://github.com/naver/ngrinder
 
 nGrinder 
 ========
