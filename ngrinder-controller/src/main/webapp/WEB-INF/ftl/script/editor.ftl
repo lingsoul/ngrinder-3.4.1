@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html>
-	<head>
+<head>
 		<#include "../common/common.ftl">
 		<#include "../common/jqplot.ftl">
-		<title><@spring.message "script.editor.title"/></title>
-		<style>
-			div.div-host {
-				background-color: #FFFFFF;
-				border: 1px solid #D6D6D6;
-				height: 63px;
-				overflow-y: scroll;
-				border-radius: 3px 3px 3px 3px;
-				width:250px;
-			}
+	<title><@spring.message "script.editor.title"/></title>
+	<style>
+		div.div-host {
+			background-color: #FFFFFF;
+			border: 1px solid #D6D6D6;
+			height: 63px;
+			overflow-y: scroll;
+			border-radius: 3px 3px 3px 3px;
+			width:250px;
+		}
 
-			div.div-host .host {
-				color: #666666;
-				display: inline-block;
-				margin-left: 7px;
-				margin-top: 2px;
-				margin-bottom: 2px;
-			}
+		div.div-host .host {
+			color: #666666;
+			display: inline-block;
+			margin-left: 7px;
+			margin-top: 2px;
+			margin-bottom: 2px;
+		}
 
-			.add-host-btn {
-				margin-top:38px;
-				margin-left:210px;
-                position:absolute
-			}
+		.add-host-btn {
+			margin-top:38px;
+			margin-left:210px;
+			position:absolute
+		}
 
-			div.modal-body div.chart {
-				border:1px solid #878988;
-				height:250px;
-				min-width:500px;
-				margin-bottom:12px;
-				padding:5px
-			}
-			code a {
-				color:inherit;
-			}
-		</style>
-	</head>
+		div.modal-body div.chart {
+			border:1px solid #878988;
+			height:250px;
+			min-width:500px;
+			margin-bottom:12px;
+			padding:5px
+		}
+		code a {
+			color:inherit;
+		}
+	</style>
+</head>
 
-	<body>
-	<div id="wrap">
+<body>
+<div id="wrap">
 	<#include "../common/navigator.ftl">
 	<div class="container">
 		<form id="content_form" name="content_form" class="well" method="post" target="_self"
@@ -114,11 +114,11 @@
 
 
 		<textarea id="codemirror_content">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
-		<textarea id="old_content" class="hidden">${((file.content)!"")?replace("&para", "&amp;para")}</textarea>
+		<textarea id="old_content" class="hidden">${(file.content)!}</textarea>
 		<div class="pull-right" rel="popover" style="float;margin-top:-20px;margin-right:-30px;cursor: pointer"
-			title="Tip" data-html="ture"
-			data-placement="left"
-			data-content="
+			 title="Tip" data-html="ture"
+			 data-placement="left"
+			 data-content="
 				Ctrl-F / Cmd-F : <@spring.message 'script.editor.tip.startSearching'/><br/>
 				Ctrl-G / Cmd-G : <@spring.message 'script.editor.tip.findNext'/><br/>
 				Shift-Ctrl-G / Shift-Cmd-G : <@spring.message 'script.editor.tip.findPrev'/><br/>
@@ -136,121 +136,121 @@
 			<div class="pull-right" rel="popover" style="float;margin-top:-30px;margin-right:-16px;"><a class="pointer-cursor" id="expand_btn"><code>+</code></a></div>
 		</div>
 	</div>
-	</div>
+</div>
 	<#include "../common/copyright.ftl">
 	<#include "../common/codemirror.ftl">
-	<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
+<script src="${req.getContextPath()}/plugins/codemirror/lang/${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}.js"></script>
 	<#include "../perftest/host_modal.ftl">
-	<script>
-		var curRevision = ${curRevision!0};
-		var lastRevision = ${lastRevision!0};
+<script>
+	var curRevision = ${curRevision!0};
+	var lastRevision = ${lastRevision!0};
 
-		function beforeUnload() {
-			return "<@spring.message "script.editor.message.exitWithoutSave"/>";
-		}
-		function saveScript() {
-			document.forms.content_form.action = "${req.getContextPath()}/script/save";
-			document.forms.content_form.submit();
-		}
-		$(document).ready(function() {
-			var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
-				mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
-				theme: "eclipse",
-				lineNumbers: true,
-				lineWrapping: true,
-				indentUnit:4,
-				tabSize:4,
-				indentWithTabs:true,
-				smartIndent:false,
-				extraKeys: {
-				 "F11": function(cm) {
-				   setFullScreen(cm, !isFullScreen(cm));
-				 },
-				 "Esc": function(cm) {
-				   if (isFullScreen(cm)) setFullScreen(cm, false);
-				 },
-				 Tab: "indentMore"
+	function beforeUnload() {
+		return "<@spring.message "script.editor.message.exitWithoutSave"/>";
+	}
+	function saveScript() {
+		document.forms.content_form.action = "${req.getContextPath()}/script/save";
+		document.forms.content_form.submit();
+	}
+	$(document).ready(function() {
+		var editor = CodeMirror.fromTextArea(document.getElementById("codemirror_content"), {
+			mode: "${scriptHandler.codemirrorKey!scriptHandler.getCodemirrorKey(file.fileType)}",
+			theme: "eclipse",
+			lineNumbers: true,
+			lineWrapping: true,
+			indentUnit:4,
+			tabSize:4,
+			indentWithTabs:true,
+			smartIndent:false,
+			extraKeys: {
+				"F11": function(cm) {
+					setFullScreen(cm, !isFullScreen(cm));
 				},
-				onCursorActivity: function() {
-				 editor.setLineClass(hlLine, null, null);
-				 hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+				"Esc": function(cm) {
+					if (isFullScreen(cm)) setFullScreen(cm, false);
 				},
-				onChange : function() {
-					window.onbeforeunload = beforeUnload;
-				}
-			});
-			var hlLine = editor.setLineClass(0, "activeline");
+				Tab: "indentMore"
+			},
+			onCursorActivity: function() {
+				editor.setLineClass(hlLine, null, null);
+				hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+			},
+			onChange : function() {
+				window.onbeforeunload = beforeUnload;
+			}
+		});
+		var hlLine = editor.setLineClass(0, "activeline");
 
-			$("#save_btn").click(function() {
-				var newContent = editor.getValue();
-				if ($("#old_content").val() != newContent) {
-					$("#validated").val("0");
-				}
-				$('#contentHd').val(newContent);
-				window.onbeforeunload = undefined;
-				if (curRevision > 0 && lastRevision > 0 && curRevision <  lastRevision) {
-					bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
-						if (result) {
-							saveScript();
-						}
-					});
-				} else {
-					saveScript();
-				}
-			});
-
-			var validating = false;
-			$("#validate_btn").click(function() {
-				if (validating) {
-					return;
-				}
-				validating = true;
-				var scriptPath = $("#script_name").val();
-				var hostString = $("#target_hosts").val();
-				$('#validation_result_panel').hide();
-				$('#script_samples_link').show();
-				var newContent = editor.getValue();
-				showProgressBar("<@spring.message 'script.editor.message.validate'/>");
-
-				var ajaxObj = new AjaxPostObj("/script/api/validate",
-								{
-									'path':scriptPath, 'content': newContent,
-									<@security.authorize access="hasAnyRole('A', 'S')"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
-									'hostString': hostString
-								},
-								null,
-								"<@spring.message 'script.editor.error.validate'/>");
-				ajaxObj.success = function(res) {
-					validating = false;
-					$('#validation_result_pre_div').text(res);
-					$('#validation_result_panel').show();
-					$('#script_samples_link').hide();
-					$('#validated').val("1");//should control the validation success or not later.
-				};
-				ajaxObj.complete = function () {
-					hideProgressBar();
-				};
-				ajaxObj.error = function () {
-					validating = false;
-				};
-				ajaxObj.call();
-
-			});
-
-			$("#expand_btn").click(function() {
-				var $validationResultDiv = $("#validation_result_pre_div");
-				var heightStr = $validationResultDiv.css("height");
-				if (heightStr == "100px") {
-					$validationResultDiv.css("height", "300px");
-					editor.setSize(null, 300);
-				} else {
-					$validationResultDiv.css("height", "100px");
-					editor.setSize(null, 500);
-				}
-			});
+		$("#save_btn").click(function() {
+			var newContent = editor.getValue();
+			if ($("#oldContent").val() != newContent) {
+				$("#validated").val("0");
+			}
+			$('#contentHd').val(newContent);
+			window.onbeforeunload = undefined;
+			if (curRevision > 0 && lastRevision > 0 && curRevision <  lastRevision) {
+				bootbox.confirm("<@spring.message "script.editor.message.overWriteNewer"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function(result) {
+					if (result) {
+						saveScript();
+					}
+				});
+			} else {
+				saveScript();
+			}
 		});
 
+		var validating = false;
+		$("#validate_btn").click(function() {
+			if (validating) {
+				return;
+			}
+			validating = true;
+			var scriptPath = $("#script_name").val();
+			var hostString = $("#target_hosts").val();
+			$('#validation_result_panel').hide();
+			$('#script_samples_link').show();
+			var newContent = editor.getValue();
+			showProgressBar("<@spring.message 'script.editor.message.validate'/>");
 
-		</script>
-	</body>
+			var ajaxObj = new AjaxPostObj("/script/api/validate",
+				{
+					'path':scriptPath, 'content': newContent,
+									<@security.authorize access="hasAnyRole('A', 'S')"><#if ownerId??>'ownerId': "${ownerId}",</#if></@security.authorize>
+					'hostString': hostString
+				},
+				null,
+				"<@spring.message 'script.editor.error.validate'/>");
+			ajaxObj.success = function(res) {
+				validating = false;
+				$('#validation_result_pre_div').text(res);
+				$('#validation_result_panel').show();
+				$('#script_samples_link').hide();
+				$('#validated').val("1");//should control the validation success or not later.
+			};
+			ajaxObj.complete = function () {
+				hideProgressBar();
+			};
+			ajaxObj.error = function () {
+				validating = false;
+			};
+			ajaxObj.call();
+
+		});
+
+		$("#expand_btn").click(function() {
+			var $validationResultDiv = $("#validation_result_pre_div");
+			var heightStr = $validationResultDiv.css("height");
+			if (heightStr == "100px") {
+				$validationResultDiv.css("height", "300px");
+				editor.setSize(null, 300);
+			} else {
+				$validationResultDiv.css("height", "100px");
+				editor.setSize(null, 500);
+			}
+		});
+	});
+
+
+</script>
+</body>
 </html>
