@@ -12,11 +12,18 @@ nGrinder 在 Grinder 基础上：
 
 【新增功能】修改者： 凌键（lingj1992@163.com）
 * 此版本主要源于nGrinder 3.4.1的基础上进行修改，主要修改点如下：
-* 1、新增收集服务器的资源使用率指标（cpu使用率（100%-idle）、内存使用率、IO使用率、Load、CPU等待率）；
-* 2、修复网络资源统计方法（received、sent）的bug；
-* 3、新增最近一次执行的日志收集，代理服务器日志路径：/${NGRINDER_HOME}/.ngrinder_agent/log/recent_log；
-* 4、修改快速测试脚本模板的断言方式，新增日志级别设置；
-* 5、修改nGrinder默认配置文件system.conf参数：主要涉及并发数、执行时长等配置；
+* 1、bug修复:网络资源统计方法（received、sent）的bug；
+* 2、bug修复:ngrinder控制台页面访问availableAgentCount返回404的bug；
+* 3、bug修复:csv文件默认分隔符","的问题；
+
+* 4、新增收集服务器的资源使用率指标（cpu使用率（100%-idle）、内存使用率、IO util%、Load、CPU等待率、磁盘读写速率）；
+* 5、新增测试报告页面交易成功率指标；
+* 6、新增测试配置页面的配置项描述，新增采样间隔180秒选项；
+* 7、新增最近一次执行的日志收集，代理服务器日志路径：/${NGRINDER_HOME}/.ngrinder_agent/log/recent_log；
+* 8、新增GrinderUtils工具类方法，如并发造数、csv文件参数化、动态数据关联等方法，为后续全链路测试做准备；
+
+* 9、修改快速测试脚本模板的断言方式，新增日志级别设置；
+* 10、修改nGrinder默认配置文件system.conf参数：主要涉及并发数、执行时长等配置；
 
 版本源码地址： https://github.com/lingsoul/ngrinder
 
