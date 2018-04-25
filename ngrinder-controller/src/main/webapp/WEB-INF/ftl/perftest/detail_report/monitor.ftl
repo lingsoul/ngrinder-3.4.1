@@ -15,8 +15,14 @@
 <h6 id="sent_byte_per_sec_chart_header">Sent (byte/s)</h6>
 <div class="chart" id="sent_byte_per_sec_chart"></div>
 
-<h6 id="diskbusy_chart_header">DiskBusy(%)</h6>
+<h6 id="diskbusy_chart_header">Disk IO_util(%)</h6>
 <div class="chart" id="diskbusy_chart"></div>
+
+<h6 id="read_byte_per_sec_chart_header">Disk Read (byte/s)</h6>
+<div class="chart" id="read_byte_per_sec_chart"></div>
+
+<h6 id="write_byte_per_sec_chart_header">Disk Write (byte/s)</h6>
+<div class="chart" id="write_byte_per_sec_chart"></div>
 
 <h6 id="load_chart_header">Load-average(one-minute)</h6>
 <div class="chart" id="load_chart"></div>
@@ -54,6 +60,9 @@
 			drawChart('mem_usage_chart', [data.memused], formatPercentage, interval);
 			// DiskBusy
 			drawChart('diskbusy_chart', [data.diskbusy], formatPercentage, interval);
+			drawChart("read_byte_per_sec_chart", [data.read], formatNetwork, interval);
+			drawChart("write_byte_per_sec_chart", [data.write], formatNetwork, interval);
+			//网络使用率
 			drawChart("received_byte_per_sec_chart", [data.received], formatNetwork, interval);
 			drawChart("sent_byte_per_sec_chart", [data.sent], formatNetwork, interval);
 			// CPU_Load

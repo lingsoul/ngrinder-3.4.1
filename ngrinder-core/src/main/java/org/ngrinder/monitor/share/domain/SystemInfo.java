@@ -38,7 +38,7 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	 */
 	//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil字段拼接
 	public static final String HEADER = "ip,system,collectTime,freeMemory,"
-		+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,cpuWait,memUsedPercentage,load,diskUtil,customValues";
+		+ "totalMemory,cpuUsedPercentage,receivedPerSec,sentPerSec,cpuWait,memUsedPercentage,load,diskUtil,readPerSec,writePerSec,customValues";
 
 
 	public boolean isParsed() {
@@ -55,6 +55,9 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	private System system;
 
 	protected BandWidth bandWidth;
+
+	//add by lingj
+	protected DiskBusy diskBusy;
 
 	private long totalCpuValue;
 
@@ -122,6 +125,16 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 				this.bandWidth.setReceivedPerSec(receivedPerSec);
 				this.bandWidth.setSentPerSec(sentPerSec);
 			}
+            //新增Disk ReadPerSec、WritePerSec
+			if (containsKey(cd, "diskBusy")) {
+				CompositeData diskBusy = (CompositeData) getObject(cd, "diskBusy");
+				this.diskBusy = new DiskBusy(collectTime);
+				long readPerSec = getLong(diskBusy, "readPerSec");
+				long writePerSec = getLong(diskBusy, "writePerSec");
+				this.diskBusy.setReadPerSec(readPerSec);
+				this.diskBusy.setWritePerSec(writePerSec);
+			}
+
 			if (containsKey(cd, "customValues")) {
 				this.setCustomValues(getString(cd, "customValues"));
 			}
@@ -210,6 +223,13 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 	}
 
 	//新增get、set方法
+	public DiskBusy getDiskBusy() {
+		return diskBusy;
+	}
+
+	public void setDiskBusy(DiskBusy diskBusy) {
+		this.diskBusy = diskBusy;
+	}
 	public double getLoad() {
 		return load;
 	}
@@ -281,10 +301,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 		if (bandWidth != null) {
 			sb.append(",").append(bandWidth.getReceivedPerSec()).append(",").append(bandWidth.getSentPerSec());
 		}
-
-		//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil的字段拼接
+		//add by lingj 新增cpuWait,memUsedPercentage,load、diskUtil、ReadPerSec、WritePerSec的字段拼接
 		sb.append(",").append(cpuWait).append(",").append(memUsedPercentage).append(",").append(load).append(",").append(diskUtil);
-
+		if (diskBusy != null) {
+			sb.append(",").append(diskBusy.getReadPerSec()).append(",").append(diskBusy.getWritePerSec());
+		}
 		if (customValues != null) {
 			sb.append(",").append(customValues);
 		}
@@ -317,8 +338,11 @@ public class SystemInfo extends MonitorInfo implements Serializable {
 			if (bandWidth != null) {
 				sb.append(",").append("null").append(",").append("null");
 			}
-			//add by lingj 新增cpuWait,memUsedPercentage,load,diskUtil的字段拼接
+			//add by lingj 新增cpuWait,memUsedPercentage,load,ReadPerSec、WritePerSec,diskUtil的字段拼接
 			sb.append(",").append("null").append(",").append("null").append(",").append("null").append(",").append("null");
+			if (diskBusy != null) {
+				sb.append(",").append("null").append(",").append("null");
+			}
 
 			if (customValues != null) {
 				int valueCount = StringUtils.countMatches(customValues, ",") + 1;

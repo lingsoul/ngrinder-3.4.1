@@ -19,6 +19,7 @@ import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.monitor.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.BandWidth;
+import org.ngrinder.monitor.share.domain.DiskBusy;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * System data collector class.
@@ -43,6 +46,8 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	private SystemInfo prev = null;
 
 	private String[] netInterfaces = new String[]{};
+
+	private FileSystem[] fileSystems = new FileSystem[]{};
 
 	private File customDataFile = null;
 
@@ -67,8 +72,10 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			sigar = new Sigar();
 			try {
 				netInterfaces = sigar.getNetInterfaceList();
+				fileSystems = sigar.getFileSystemList();//add by lingj
 				prev = new SystemInfo();
 				prev.setBandWidth(getNetworkUsage());
+				prev.setDiskBusy(getFileSystemList());//add by lingj
 			} catch (SigarException e) {
 				LOGGER.error("Network usage data retrieval failed.", e);
 			}
@@ -94,33 +101,33 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			//systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
-			//add by lingj
-			//修改cpu使用率为1-idle%
-			systemInfo.setCPUUsedPercentage((float) (1-sigar.getCpuPerc().getIdle()) * 100);
 
+			//add by lingj,新增磁盘读写速率
+			DiskBusy fileSystemList = getFileSystemList();
+			DiskBusy diskBusy = fileSystemList.adjust(prev.getDiskBusy());
+			systemInfo.setDiskBusy(diskBusy);
+//			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			systemInfo.setCPUUsedPercentage((float) (1-sigar.getCpuPerc().getIdle()) * 100); //修改CPU使用率为1-idle%
+			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100); //CPU等待率
 			Cpu cpu = sigar.getCpu();
 			systemInfo.setTotalCpuValue(cpu.getTotal());
 			systemInfo.setIdleCpuValue(cpu.getIdle());
 			Mem mem = sigar.getMem();
 			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
 			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
+
+			systemInfo.setMemUsedPercentage(mem.getUsedPercent()); //内存使用率
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
 
-			//add by lingj 新增cpuWaitcpu等待率,memUsedPercentage内存使用率,load,diskUtil数据收集
-			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100);
-			systemInfo.setMemUsedPercentage(mem.getUsedPercent());
-			double load = sigar.getLoadAverage()[0];
-			systemInfo.setLoad(load);
-//			long read = 0l;
-//			long write = 0l;
-//          systemInfo.setRead(read / 1024L);
-//          systemInfo.setWrite(write / 1024L);
 			if (systemInfo.getSystem() == SystemInfo.System.LINUX) {
 				IoUsageCollector iousage = new IoUsageCollector();
 				systemInfo.setDiskUtil(iousage.getIoUsage());
 			}
+
+			double load = sigar.getLoadAverage()[0];
+			systemInfo.setLoad(load);
+
 		} catch (Throwable e) {
 			LOGGER.debug("Error while getting system perf data:{}", e);
 			LOGGER.debug("Error trace is ", e);
@@ -147,6 +154,34 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			}
 		}
 		return bandWidth;
+	}
+
+	/**
+	 * add by lingj
+	 * Get the current Disk Read and Write usage.
+	 *
+	 * @return DiskBusy
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 */
+	public DiskBusy getFileSystemList() throws SigarException {
+		DiskBusy diskBusy = new DiskBusy(System.currentTimeMillis());
+		// 获取本地文件系统
+		List<String> localDevNames = new ArrayList<String>();
+		for(FileSystem fileSystem : fileSystems) {
+			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
+				localDevNames.add(fileSystem.getDevName());
+			}
+		}
+		for (String each : localDevNames) {
+			try {
+				DiskUsage diskUsage = sigar.getDiskUsage(each);
+				diskBusy.setRead(diskBusy.getRead() + diskUsage.getReadBytes());
+				diskBusy.setWrite(diskBusy.getWrite() + diskUsage.getWriteBytes());
+			} catch (Exception e) {
+				NoOp.noOp();
+			}
+		}
+		return diskBusy;
 	}
 
 	private String getCustomMonitorData() {

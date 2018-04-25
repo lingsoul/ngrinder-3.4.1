@@ -1238,7 +1238,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			StringBuilder sbMemUsedPercentage = new StringBuilder("[");
 			StringBuilder sbLoad = new StringBuilder("[");
 			StringBuilder sbDiskUtil = new StringBuilder("[");
-
+			StringBuilder sbRead = new StringBuilder("[");
+			StringBuilder sbWrite = new StringBuilder("[");
 			StringBuilder customData1 = new StringBuilder("[");
 			StringBuilder customData2 = new StringBuilder("[");
 			StringBuilder customData3 = new StringBuilder("[");
@@ -1272,11 +1273,13 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 					addCustomData(sbMemUsedPercentage, 9, datalist);
 					addCustomData(sbLoad, 10, datalist);
 					addCustomData(sbDiskUtil, 11, datalist);
-					addCustomData(customData1, 12, datalist);
-					addCustomData(customData2, 13, datalist);
-					addCustomData(customData3, 14, datalist);
-					addCustomData(customData4, 15, datalist);
-					addCustomData(customData5, 16, datalist);
+					addCustomData(sbRead, 12, datalist);
+					addCustomData(sbWrite, 13, datalist);
+					addCustomData(customData1, 14, datalist);
+					addCustomData(customData2, 15, datalist);
+					addCustomData(customData3, 16, datalist);
+					addCustomData(customData4, 17, datalist);
+					addCustomData(customData5, 18, datalist);
 
 					line = br.readLine();
 				}
@@ -1296,6 +1299,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			completeCustomData(returnMap, "memused", sbMemUsedPercentage);
 			completeCustomData(returnMap, "load", sbLoad);
 			completeCustomData(returnMap, "diskbusy", sbDiskUtil);
+			completeCustomData(returnMap, "read", sbRead);
+			completeCustomData(returnMap, "write", sbWrite);
 		} catch (IOException e) {
 			LOGGER.info("Error while getting monitor {} data file at {}", targetIP, monitorDataFile);
 		} finally {
