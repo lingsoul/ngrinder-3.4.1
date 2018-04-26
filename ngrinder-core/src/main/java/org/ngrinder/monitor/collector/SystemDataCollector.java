@@ -49,6 +49,8 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 
 	private FileSystem[] fileSystems = new FileSystem[]{};
 
+	private List<String> localDevNames = new ArrayList<String>(){};
+
 	private File customDataFile = null;
 
 	/**
@@ -73,6 +75,7 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			try {
 				netInterfaces = sigar.getNetInterfaceList();
 				fileSystems = sigar.getFileSystemList();//add by lingj
+				localDevNames = getlocalDevNames();
 				prev = new SystemInfo();
 				prev.setBandWidth(getNetworkUsage());
 				prev.setDiskBusy(getFileSystemList());//add by lingj
@@ -165,13 +168,6 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	 */
 	public DiskBusy getFileSystemList() throws SigarException {
 		DiskBusy diskBusy = new DiskBusy(System.currentTimeMillis());
-		// 获取本地文件系统
-		List<String> localDevNames = new ArrayList<String>();
-		for(FileSystem fileSystem : fileSystems) {
-			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
-				localDevNames.add(fileSystem.getDevName());
-			}
-		}
 		for (String each : localDevNames) {
 			try {
 				DiskUsage diskUsage = sigar.getDiskUsage(each);
@@ -182,6 +178,23 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			}
 		}
 		return diskBusy;
+	}
+
+	/**
+	 * add by lingj
+	 * Get the localDevNames.
+	 *
+	 * @return localDevNames
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 */
+	public List<String> getlocalDevNames() throws SigarException {
+		List<String> localDevNames = new ArrayList<String>();
+		for(FileSystem fileSystem : fileSystems) {
+			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
+				localDevNames.add(fileSystem.getDevName());
+			}
+		}
+		return localDevNames;
 	}
 
 	private String getCustomMonitorData() {
