@@ -47,8 +47,6 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 
 	private String[] netInterfaces = new String[]{};
 
-	private FileSystem[] fileSystems = new FileSystem[]{};
-
 	private List<String> localDevNames = new ArrayList<String>(){};
 
 	private File customDataFile = null;
@@ -74,13 +72,12 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			sigar = new Sigar();
 			try {
 				netInterfaces = sigar.getNetInterfaceList();
-				fileSystems = sigar.getFileSystemList();//add by lingj
 				localDevNames = getlocalDevNames();
 				prev = new SystemInfo();
 				prev.setBandWidth(getNetworkUsage());
-				prev.setDiskBusy(getFileSystemList());//add by lingj
+				prev.setDiskBusy(getDiskUsage());
 			} catch (SigarException e) {
-				LOGGER.error("Network usage data retrieval failed.", e);
+				LOGGER.error("Network or Disk usage data retrieval failed.", e);
 			}
 		}
 	}
@@ -106,8 +103,8 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			systemInfo.setBandWidth(bandWidth);
 
 			//add by lingj,新增磁盘读写速率
-			DiskBusy fileSystemList = getFileSystemList();
-			DiskBusy diskBusy = fileSystemList.adjust(prev.getDiskBusy());
+			DiskBusy diskUsage = getDiskUsage();
+			DiskBusy diskBusy = diskUsage.adjust(prev.getDiskBusy());
 			systemInfo.setDiskBusy(diskBusy);
 //			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
 			systemInfo.setCPUUsedPercentage((float) (1-sigar.getCpuPerc().getIdle()) * 100); //修改CPU使用率为1-idle%
@@ -160,13 +157,13 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	}
 
 	/**
-	 * add by lingj
 	 * Get the current Disk Read and Write usage.
 	 *
 	 * @return DiskBusy
 	 * @throws SigarException thrown when the underlying lib is not linked
+	 * @author lingj
 	 */
-	public DiskBusy getFileSystemList() throws SigarException {
+	public DiskBusy getDiskUsage() throws SigarException {
 		DiskBusy diskBusy = new DiskBusy(System.currentTimeMillis());
 		for (String each : localDevNames) {
 			try {
@@ -181,13 +178,14 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	}
 
 	/**
-	 * add by lingj
 	 * Get the localDevNames.
 	 *
 	 * @return localDevNames
 	 * @throws SigarException thrown when the underlying lib is not linked
+	 * @author lingj
 	 */
 	public List<String> getlocalDevNames() throws SigarException {
+		FileSystem[] fileSystems = sigar.getFileSystemList();
 		List<String> localDevNames = new ArrayList<String>();
 		for(FileSystem fileSystem : fileSystems) {
 			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
