@@ -139,6 +139,8 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			spec = spec.and(statusSetEqual(Status.FINISHED));
 		} else if ("R".equals(queryFilter)) {
 			spec = spec.and(statusSetEqual(Status.TESTING));
+		} else if ("SAVED".equals(queryFilter)) {
+			spec = spec.and(statusSetEqual(Status.SAVED));
 		} else if ("S".equals(queryFilter)) {
 			spec = spec.and(statusSetEqual(Status.READY));
 			spec = spec.and(scheduledTimeNotEmptyPredicate());
