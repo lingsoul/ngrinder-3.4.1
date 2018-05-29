@@ -82,16 +82,14 @@
 <#setting number_format="number">
 <body>
 
-<div class="report" style="width:200px; margin-left:auto; max-height: 65px;margin-bottom:0;float:left;">
-	<ul class="nav nav-list" id="reportid">
-		<li class="report pointer-cursor nav-header">
-			<a class="pointer-cursor" ><@spring.message "perfTest.report.performanceReport"/></a>
-		</li>
-
-	</ul>
-</div>
-
 <div id="wrap">
+	<div class="left-float" style="margin-left:auto;margin-right:auto;max-height: 65px;margin-bottom:0;">
+		<ul class="nav nav-list" id="reportid">
+			<li class="report pointer-cursor nav-header">
+				<a class="pointer-cursor" ><@spring.message "perfTest.report.performanceReport"/></a>
+			</li>
+		</ul>
+	</div>
 	<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; max-height: 65px;margin-bottom:0">
 		<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 	</div>
