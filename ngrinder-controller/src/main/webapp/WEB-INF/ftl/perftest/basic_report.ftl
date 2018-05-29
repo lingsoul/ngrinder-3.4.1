@@ -61,7 +61,7 @@
 				</a>
 			</legend>
 		</fieldSet>
-		<div id="tps_chart" class="chart" style="width: 610px; height: 300px"></div> 
+		<div id="tps_chart" class="chart" style="width: 610px; height: 300px"></div>
 	</div>
 </div>
 <div class="row report">
@@ -69,10 +69,10 @@
 		<fieldSet>
 			<legend>
 				<@spring.message "perfTest.report.logs"/>
-				<span style="margin-top:10px;margin-left:10px" 
+				<span style="margin-top:10px;margin-left:10px"
 					rel="popover"
-					data-html="true" 
-					data-content='<@spring.message "perfTest.report.logs.help"/>' 
+					data-html="true"
+					data-content='<@spring.message "perfTest.report.logs.help"/>'
 					title='<@spring.message "perfTest.report.logs"/>' id="log_comment"><i class="icon-question-sign pointer-cursor"></i></span>
 			</legend>
 		</fieldSet>
@@ -105,7 +105,7 @@
 	$("#leave_comment_btn").click(function(){
 		var comment = $("#test_comment").val();
 		var tagString = buildTagString();
-		var ajaxObj = new AjaxPostObj("${req.getContextPath()}/perftest/${(test.id)?c}/leave_comment",
+		var ajaxObj = new AjaxPostObj("/perftest/${(test.id)?c}/leave_comment",
 				{ "testComment": comment, "tagString":tagString },
 				"<@spring.message "perfTest.report.message.leaveComment"/>"
 		);
@@ -113,7 +113,7 @@
 	});
 
 	$("#detail_report_btn").click(function () {
-		window.open("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report");
+		window.open("${req.getContextPath()}/perftest/${(test.id)?c}/detail_report?reportids=${(test.id)?c}");
 	});
 
 	//@ sourceURL=/perftest/basic_report

@@ -70,10 +70,10 @@
 		<div class="pull-right" style="margin-top:-20px"><code id="current_running_status" style="width:300px"></code>
 		</div>
 		<form id="test_list_form" name="test_list_form"
-			  class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:30px;"
+			  class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:60px;"
 			  action="${req.getContextPath()}/perftest/list" method="GET">
 			<div class="left-float" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
-				<select id="tag" name="tag" style="width:150px">
+				<select id="tag" name="tag" style="width:150px;">
 					<option value=""></option>
 			<@list list_items=availTags others="none"; eachTag >
 				<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
@@ -86,19 +86,19 @@
 					<i class="icon-search"></i> <@spring.message "common.button.search"/>
 				</button>
 				<label class="checkbox" style="position:relative; margin-left:5px">
-					<input type="checkbox" id="running_only_checkbox" name="queryFilter"
+					<input type="radio" id="running_only_checkbox" name="queryFilter"
 					   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
 						   value="R">
 			<@spring.message "perfTest.action.running"/>
 				</label>
 				<label class="checkbox" style="position:relative; margin-left:5px">
-					<input type="checkbox" id="scheduled_only_checkbox" name="queryFilter"
+					<input type="radio" id="scheduled_only_checkbox" name="queryFilter"
 					   <#if queryFilter?? && queryFilter == 'S'>checked</#if>
 						   value="S">
 			<@spring.message "perfTest.action.scheduled"/>
 				</label>
 				<label class="checkbox" style="position:relative; margin-left:5px">
-					<input type="checkbox" id="saved_only_checkbox" name="queryFilter"
+					<input type="radio" id="saved_only_checkbox" name="queryFilter"
 					   <#if queryFilter?? && queryFilter == 'SAVED'>checked</#if>
 						   value="SAVED">
 			<@spring.message "perfTest.action.saved"/>
@@ -121,6 +121,13 @@
 					<i class="icon-remove icon-white"></i>
 			<@spring.message "perfTest.action.deleteSelectedTest"/>
 				</a>
+			</div>
+			<div class="left-float" style="padding: 3px 0;">
+				<a class="pointer-cursor btn btn-info" id="batch_report_btn" data-step="2" title="<@spring.message 'intro.list.batch.report.help'/>"
+				   data-intro="<@spring.message 'intro.list.batch.report'/>">
+					<i class="icon-picture icon-white"></i>
+			<@spring.message "perfTest.action.viewReports"/>
+				</a>&nbsp;&nbsp;&nbsp;&nbsp;Tips : <@spring.message 'intro.list.batch.report.help'/>
 			</div>
 
 			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}">
@@ -147,7 +154,7 @@
 				<col width="65">
 				<col width="70">
 				<col width="65">
-				<col width="60">
+				<col width="70">
 			</colgroup>
 			<thead>
 			<tr id="head_tr_id">
@@ -197,7 +204,7 @@
 				 data-html="true"
 				 data-content=
 					 "${((test.description!"")?html)?replace("\n","<br/>")} <p>${test.testComment?html?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${(test.createdUser.userName)!} (${(test.createdUser.userId)!})<#if test.lastModifiedUser??><br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})</#if>"
-				 data-title="<#escape x as x?html>${test.testName!""}</#escape>">
+				 data-title="<#escape x as x?html>[${test.id?html?replace("\n", "<br/>")}]  ${test.testName!""}</#escape>">
 				<a href="${req.getContextPath()}/perftest/${test.id}"
 				   target="_self"><#escape x as x?html>${test.testName!""}</#escape></a>
 			</div>
@@ -265,6 +272,9 @@
 			<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
 			   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
 			   class="icon-download	test-display pointer-cursor" sid="${test.id}"></i>
+			<i title="<@spring.message 'perfTest.action.showReport'/>" id="report_${test.id}"
+			   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
+			   class="icon-picture test-report pointer-cursor" sid="${test.id}"></i>
 			<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
 			   style="<#if deletable>display: none;</#if>"
 			   class="icon-remove test-remove pointer-cursor" sid="${test.id}"></i>
@@ -350,6 +360,14 @@
 			});
 		});
 
+		$("#batch_report_btn").click(function () {
+			var list = $("td input:checked");
+			if (list.length == 0) {
+				bootbox.alert("<@spring.message "perfTest.message.delete.alert"/>", "<@spring.message "common.button.ok"/>");
+				return;
+			}
+			viewReports(list);
+		});
 
 		$("i.test-remove").click(function () {
 			var id = $(this).attr("sid");
@@ -359,6 +377,11 @@
 					setTimeout(getList(), 1000);
 				}
 			});
+		});
+
+		$("i.test-report").click(function () {
+			var id = $(this).attr("sid");
+			window.open("${req.getContextPath()}/perftest/"+ id +"/detail_report?reportids="+id);
 		});
 
 		$("i.test-display").click(function () {
@@ -476,12 +499,12 @@
 			var $this = $(this);
 			var checkId = $this.attr("id");
 			if (checkId == "scheduled_only_checkbox") {
-				checkboxReject($this, $("#running_only_checkbox"));
+				checkboxReject($this, $("#scheduled_only_checkbox"));
 			}
 			if (checkId == "saved_only_checkbox") {
 				checkboxReject($this, $("#saved_only_checkbox"));
 			} else if (checkId == "running_only_checkbox") {
-				checkboxReject($this, $("#scheduled_only_checkbox"));
+				checkboxReject($this, $("#running_only_checkbox"));
 			}
 			document.forms.test_list_form.submit();
 		});
@@ -496,6 +519,16 @@
 		if (obj1.attr("checked") == "checked" && obj2.attr("checked") == "checked") {
 			obj2.attr("checked", false);
 		}
+	}
+
+	function viewReports(list) {
+		var ids = list.map(function () {
+			return $(this).val();
+		}).get();
+		ids.sort(function sortNumber(a, b) {
+			return a - b
+		});
+		window.open("${req.getContextPath()}/perftest/"+ ids[0] +"/detail_report?reportids="+ids);
 	}
 
 	function deleteTests(ids) {
@@ -567,6 +600,7 @@
 
 		if (reportable == true) {
 			$("#show_" + id).show();
+			$("#report_" + id).show();
 		}
 	}
 

@@ -81,8 +81,18 @@
 
 <#setting number_format="number">
 <body>
+
+<div class="report" style="width:200px; margin-left:auto; max-height: 65px;margin-bottom:0;float:left;">
+	<ul class="nav nav-list" id="reportid">
+		<li class="report pointer-cursor nav-header">
+			<a class="pointer-cursor" ><@spring.message "perfTest.report.performanceReport"/></a>
+		</li>
+
+	</ul>
+</div>
+
 <div id="wrap">
-	<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; margin-bottom:0">
+	<div class="navbar-inner" style="width:912px; margin-left:auto; margin-right:auto; max-height: 65px;margin-bottom:0">
 		<h3><@spring.message "perfTest.report.reportPage"/> ${test.testName}</h3>
 	</div>
 	<div class="container">
@@ -248,6 +258,21 @@
 		$("li.active").removeClass("active");
 		obj.addClass("active");
 	}
+
+	$(function(){
+		$(window).load(function(){
+			getSenceIds();
+			function getSenceIds() {
+				var url  = location.search;
+				if (url.indexOf("?") != -1) {
+					var ids = url.substr(1+"reportids=".length).split(",");
+				}
+				for(var i=0;i<ids.length;i++) {
+					$('#reportid').append('<li class="report pointer-cursor" reportid="'+ids[i]+'"><a class="pointer-cursor"  href="${req.getContextPath()}/perftest/'+ids[i]+'/detail_report'+url+'">'+ids[i]+'</a></li>');
+				}
+			}
+		});
+	});
 
 </script>
 </body>
