@@ -83,10 +83,10 @@
 <body>
 
 <div id="wrap">
-	<div class="left-float" style="margin-left:auto;margin-right:auto;max-height: 65px;margin-bottom:0;">
+	<div class="left-float" style="position:fixed;margin-left:auto;margin-right:auto;max-height: 65px;margin-bottom:0;">
 		<ul class="nav nav-list" id="reportid">
 			<li class="report pointer-cursor nav-header">
-				<a class="pointer-cursor" ><@spring.message "perfTest.report.performanceReport"/></a>
+				<a class="pointer-cursor" ><@spring.message "perfTest.report.performanceReport.total"/></a>
 			</li>
 		</ul>
 	</div>
@@ -252,25 +252,29 @@
 		$perfMenu.click();
 	});
 
+	$(function(){
+		getSenceIds();
+	});
+
 	function changActiveLink(obj) {
 		$("li.active").removeClass("active");
 		obj.addClass("active");
 	}
 
-	$(function(){
-		$(window).load(function(){
-			getSenceIds();
-			function getSenceIds() {
-				var url  = location.search;
-				if (url.indexOf("?") != -1) {
-					var ids = url.substr(1+"reportids=".length).split(",");
-				}
-				for(var i=0;i<ids.length;i++) {
-					$('#reportid').append('<li class="report pointer-cursor" reportid="'+ids[i]+'"><a class="pointer-cursor"  href="${req.getContextPath()}/perftest/'+ids[i]+'/detail_report'+url+'">'+ids[i]+'</a></li>');
-				}
+	function getSenceIds() {
+		var idurl = window.location.pathname.split("/");
+		var url = location.search;
+		if (url.indexOf("?") != -1) {
+			var ids = url.substr(1+"reportids=".length).split(",");
+		}
+		for(var i=0;i<ids.length;i++) {
+			if (idurl[3] == ids[i]) {
+				$('#reportid').append('<li class="report pointer-cursor active" reportid="'+ids[i]+'"><a class="pointer-cursor" href="${req.getContextPath()}/perftest/'+ids[i]+'/detail_report'+url+'">'+ids[i]+'</a></li>');
+			}else {
+				$('#reportid').append('<li class="report pointer-cursor" reportid="'+ids[i]+'"><a class="pointer-cursor" href="${req.getContextPath()}/perftest/'+ids[i]+'/detail_report'+url+'">'+ids[i]+'</a></li>');
 			}
-		});
-	});
+		}
+	}
 
 </script>
 </body>
