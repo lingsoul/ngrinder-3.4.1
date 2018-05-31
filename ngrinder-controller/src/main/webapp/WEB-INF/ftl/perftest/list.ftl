@@ -111,7 +111,7 @@
 					<i class="icon-file icon-white"></i>
 			<@spring.message "perfTest.action.createTest"/>
 				</a>
-				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2"
+				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2" title="<@spring.message 'intro.list.batch.start.help'/>"
 				   data-intro="<@spring.message 'intro.list.batch.start'/>">
 					<i class="icon-ok icon-white"></i>
 			<@spring.message "perfTest.action.startSelectedTest"/>
