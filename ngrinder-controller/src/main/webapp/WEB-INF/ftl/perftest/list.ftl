@@ -72,7 +72,31 @@
 		<form id="test_list_form" name="test_list_form"
 			  class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:60px;"
 			  action="${req.getContextPath()}/perftest/list" method="GET">
-			<div class="left-float" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
+			<div class="left-float">
+				<a class="pointer-cursor btn btn-info" id="batch_report_btn" data-step="2" title="<@spring.message 'intro.list.batch.report.help'/>"
+				   data-intro="<@spring.message 'intro.list.batch.report'/>">
+					<i class="icon-picture icon-white"></i>
+			<@spring.message "perfTest.action.viewReports"/>
+				</a>
+			</div>
+			<div class="right-float">
+				<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn" data-step="1"
+				   data-intro="<@spring.message 'intro.list.create'/>">
+					<i class="icon-file icon-white"></i>
+			<@spring.message "perfTest.action.createTest"/>
+				</a>
+				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2" title="<@spring.message 'intro.list.batch.start.help'/>"
+				   data-intro="<@spring.message 'intro.list.batch.start'/>">
+					<i class="icon-ok icon-white"></i>
+			<@spring.message "perfTest.action.startSelectedTest"/>
+				</a>
+				<a class="pointer-cursor btn btn-danger" id="delete_btn" data-step="2"
+				   data-intro="<@spring.message 'intro.list.delete'/>">
+					<i class="icon-remove icon-white"></i>
+			<@spring.message "perfTest.action.deleteSelectedTest"/>
+				</a>
+			</div>
+			<div class="left-float"  style="padding: 5px 0;" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
 				<select id="tag" name="tag" style="width:150px;">
 					<option value=""></option>
 			<@list list_items=availTags others="none"; eachTag >
@@ -104,32 +128,6 @@
 			<@spring.message "perfTest.action.saved"/>
 				</label>
 			</div>
-
-			<div class="right-float">
-				<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn" data-step="1"
-				   data-intro="<@spring.message 'intro.list.create'/>">
-					<i class="icon-file icon-white"></i>
-			<@spring.message "perfTest.action.createTest"/>
-				</a>
-				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2" title="<@spring.message 'intro.list.batch.start.help'/>"
-				   data-intro="<@spring.message 'intro.list.batch.start'/>">
-					<i class="icon-ok icon-white"></i>
-			<@spring.message "perfTest.action.startSelectedTest"/>
-				</a>
-				<a class="pointer-cursor btn btn-danger" id="delete_btn" data-step="2"
-				   data-intro="<@spring.message 'intro.list.delete'/>">
-					<i class="icon-remove icon-white"></i>
-			<@spring.message "perfTest.action.deleteSelectedTest"/>
-				</a>
-			</div>
-			<div class="left-float" style="padding: 3px 0;">
-				<a class="pointer-cursor btn btn-info" id="batch_report_btn" data-step="2" title="<@spring.message 'intro.list.batch.report.help'/>"
-				   data-intro="<@spring.message 'intro.list.batch.report'/>">
-					<i class="icon-picture icon-white"></i>
-			<@spring.message "perfTest.action.viewReports"/>
-				</a>&nbsp;&nbsp;&nbsp;&nbsp;Tips : <@spring.message 'intro.list.batch.report.help'/>
-			</div>
-
 			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}">
 			<input type="hidden" id="page_size" name="page.size" value="${page.pageSize}">
 			<input type="hidden" id="sort" name="sort" value="${sort!'lastModifiedDate,DESC'}">
@@ -362,8 +360,21 @@
 
 		$("#batch_report_btn").click(function () {
 			var list = $("td input:checked");
+			var reportCount = 0;
+			var ids = list.map(function () {
+				return $(this).val();
+			});
 			if (list.length == 0) {
 				bootbox.alert("<@spring.message "perfTest.message.delete.alert"/>", "<@spring.message "common.button.ok"/>");
+				return;
+			}
+			for (var i = 0;i<list.length;i++){
+				if ($("#report_" + ids[i]).css('display')!==('none')){
+					reportCount++;
+				}
+			}
+			if (reportCount < list.length) {
+				bootbox.alert("<@spring.message "perfTest.message.batch.report.alert"/>", "<@spring.message "common.button.ok"/>");
 				return;
 			}
 			viewReports(list);
