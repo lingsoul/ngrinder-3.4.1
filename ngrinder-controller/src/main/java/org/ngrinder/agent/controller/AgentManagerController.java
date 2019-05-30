@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.controller;
 
@@ -27,6 +27,7 @@ import org.ngrinder.region.service.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,12 +36,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.ngrinder.common.util.CollectionUtils.buildMap;
-import static org.ngrinder.common.util.CollectionUtils.newArrayList;
-import static org.ngrinder.common.util.CollectionUtils.newHashMap;
+import static com.google.common.collect.Collections2.filter;
+import static org.ngrinder.common.util.CollectionUtils.*;
+import static org.ngrinder.common.util.SpringSecurityUtils.containsAuthority;
+import static org.ngrinder.common.util.SpringSecurityUtils.getCurrentAuthorities;
 
 /**
  * Agent management controller.
@@ -65,26 +68,28 @@ public class AgentManagerController extends BaseController {
 
 	/**
 	 * Get the agents.
-	 *
-	 * @param region the region to search. If null, it returns all the attached
-	 *               agents.
-	 * @param model  model
-	 * @return agent/list
 	 */
 	@RequestMapping({"", "/", "/list"})
-	public String getAll(@RequestParam(value = "region", required = false) final String region, ModelMap model) {
-		List<AgentInfo> agents = agentManagerService.getAllVisible();
-		model.addAttribute("agents", Collections2.filter(agents, new Predicate<AgentInfo>() {
+	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
+	public String getAll(final User user, @RequestParam(value = "region", required = false) final String region, ModelMap model) {
+		final Collection<? extends GrantedAuthority> authorities = getCurrentAuthorities();
+		Collection<AgentInfo> agents = agentManagerService.getAllVisible();
+
+		agents = filter(agents, new Predicate<AgentInfo>() {
 			@Override
 			public boolean apply(AgentInfo agentInfo) {
-				final String eachAgentRegion = agentInfo.getRegion();
-				//noinspection SimplifiableIfStatement
-				if (StringUtils.equals(region, "all") || StringUtils.isEmpty(region)) {
-					return true;
-				}
-				return eachAgentRegion.startsWith(region + "_owned") || region.equals(eachAgentRegion);
+				return filterAgentByCluster(region, agentInfo.getRegion());
 			}
-		}));
+		});
+
+		agents = filter(agents, new Predicate<AgentInfo>() {
+			@Override
+			public boolean apply(AgentInfo agentInfo) {
+				return filterAgentByUserAuthorityAndId(authorities, user.getUserId(), region, agentInfo.getRegion());
+			}
+		});
+
+		model.addAttribute("agents", agents);
 		model.addAttribute("region", region);
 		model.addAttribute("regions", regionService.getAllVisibleRegionNames());
 		File agentPackage = null;
@@ -102,6 +107,39 @@ public class AgentManagerController extends BaseController {
 		return "agent/list";
 	}
 
+	/**
+	 * Filter agent list by referring to cluster
+	 */
+	private boolean filterAgentByCluster(String region, String agentRegion) {
+		//noinspection SimplifiableIfStatement
+		if (StringUtils.isEmpty(region)) {
+			return true;
+		} else {
+			return agentRegion.startsWith(region + "_owned") || region.equals(agentRegion);
+		}
+	}
+
+	/**
+	 * Filter agent list using user authority and user id
+	 */
+	private boolean filterAgentByUserAuthorityAndId(Collection<? extends GrantedAuthority> authorities, String userId, String region, String agentRegion) {
+		if (isAdminOrSuperUser(authorities)) {
+			return true;
+		}
+
+		if (StringUtils.isEmpty(region)) {
+			return !agentRegion.contains("_owned_") || agentRegion.endsWith("_owned_" + userId);
+		} else {
+			return agentRegion.startsWith(region + "_owned_" + userId) ||  region.equals(agentRegion);
+		}
+	}
+
+	/**
+	 * Check if the current user is admin or super user
+	 */
+	private boolean isAdminOrSuperUser(Collection<? extends GrantedAuthority> authorities) {
+		return containsAuthority(authorities, "A") || containsAuthority(authorities, "S");
+	}
 
 	/**
 	 * Get the agent detail info for the given agent id.
@@ -149,7 +187,7 @@ public class AgentManagerController extends BaseController {
 	 * @return json message
 	 */
 	@RestAPI
-	@PreAuthorize("hasAnyRole('A')")
+	@PreAuthorize("hasAnyRole('A', 'S', 'U')")
 	@RequestMapping(value = {"/api/states/", "/api/states"}, method = RequestMethod.GET)
 	public HttpEntity<String> getStates() {
 		List<AgentInfo> agents = agentManagerService.getAllVisible();
@@ -282,10 +320,10 @@ public class AgentManagerController extends BaseController {
 		}
 		return statuses;
 	}
-	
+
 	/**
 	 * Get the number of available agents.
-	 * 
+	 *
 	 * @param user The login user
 	 * @param targetRegion The name of target region
 	 * @return availableAgentCount Available agent count
@@ -294,11 +332,11 @@ public class AgentManagerController extends BaseController {
 	@RequestMapping(value = {"/api/availableAgentCount"}, method = RequestMethod.GET)
 	@PreAuthorize("permitAll")
 	public HttpEntity<String> getAvailableAgentCount(User user,
-		@RequestParam(value = "targetRegion", required = true) String targetRegion) {
+													 @RequestParam(value = "targetRegion", required = true) String targetRegion) {
 		int availableAgentCount = agentManagerService.getReadyAgentCount(user, targetRegion);
 		HttpEntity<String> returnHttpEntity = toJsonHttpEntity(buildMap("availableAgentCount",
 			availableAgentCount));
 		return returnHttpEntity;
 	}
-	
+
 }
