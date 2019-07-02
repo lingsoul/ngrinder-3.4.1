@@ -10,7 +10,7 @@ nGrinder 在 Grinder 基础上：
 * 插件系统扩展
 
 
-【修改者】 凌键（lingj1992@163.com）
+【修改者】 Lingj（lingj1992@163.com）
 * 此版本主要源于nGrinder 3.4.1的基础上进行修改，主要修改点如下：
 * 【bug修复】:
     * 1、网络资源统计方法（received、sent）的bug；
