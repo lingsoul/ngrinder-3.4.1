@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-<#include "../common/common.ftl">
-<#include "../common/datatables.ftl">
-<#include "../common/jqplot.ftl">
+	<#include "../common/common.ftl">
+	<#include "../common/datatables.ftl">
+	<#include "../common/jqplot.ftl">
 	<title><@spring.message "perfTest.list.title"/></title>
 	<style>
 		td.today {
@@ -73,35 +73,38 @@
 			  class="well form-inline search-bar" style="margin-top:0;margin-bottom:0;height:60px;"
 			  action="${req.getContextPath()}/perftest/list" method="GET">
 			<div class="left-float">
-				<a class="pointer-cursor btn btn-info" id="batch_report_btn" data-step="2" title="<@spring.message 'intro.list.batch.report.help'/>"
+				<a class="pointer-cursor btn btn-info" id="batch_report_btn" data-step="2"
+				   title="<@spring.message 'intro.list.batch.report.help'/>"
 				   data-intro="<@spring.message 'intro.list.batch.report'/>">
 					<i class="icon-picture icon-white"></i>
-			<@spring.message "perfTest.action.viewReports"/>
+					<@spring.message "perfTest.action.viewReports"/>
 				</a>
 			</div>
 			<div class="right-float">
 				<a class="btn btn-primary" href="${req.getContextPath()}/perftest/new" id="create_btn" data-step="1"
 				   data-intro="<@spring.message 'intro.list.create'/>">
 					<i class="icon-file icon-white"></i>
-			<@spring.message "perfTest.action.createTest"/>
+					<@spring.message "perfTest.action.createTest"/>
 				</a>
-				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2" title="<@spring.message 'intro.list.batch.start.help'/>"
+				<a class="pointer-cursor btn btn-success" id="batch_start_btn" data-step="2"
+				   title="<@spring.message 'intro.list.batch.start.help'/>"
 				   data-intro="<@spring.message 'intro.list.batch.start'/>">
 					<i class="icon-ok icon-white"></i>
-			<@spring.message "perfTest.action.startSelectedTest"/>
+					<@spring.message "perfTest.action.startSelectedTest"/>
 				</a>
 				<a class="pointer-cursor btn btn-danger" id="delete_btn" data-step="2"
 				   data-intro="<@spring.message 'intro.list.delete'/>">
 					<i class="icon-remove icon-white"></i>
-			<@spring.message "perfTest.action.deleteSelectedTest"/>
+					<@spring.message "perfTest.action.deleteSelectedTest"/>
 				</a>
 			</div>
-			<div class="left-float"  style="padding: 5px 0;" data-step="3" data-intro="<@spring.message 'intro.list.search'/>">
+			<div class="left-float" style="padding: 5px 0;" data-step="3"
+				 data-intro="<@spring.message 'intro.list.search'/>">
 				<select id="tag" name="tag" style="width:150px;">
 					<option value=""></option>
-			<@list list_items=availTags others="none"; eachTag >
-				<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
-			</@list>
+					<@list list_items=availTags others="none"; eachTag >
+						<option value="${eachTag}" <#if tag?? && eachTag == tag>selected </#if> >${eachTag}</option>
+					</@list>
 				</select>
 				<input type="text" class="search-query search-query-without-radios span2" placeholder="Keywords"
 					   name="query" id="query" value="${query!}">
@@ -111,21 +114,21 @@
 				</button>
 				<label class="checkbox" style="position:relative; margin-left:5px">
 					<input type="radio" id="running_only_checkbox" name="queryFilter"
-					   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
+						   <#if queryFilter?? && queryFilter == 'R'>checked</#if>
 						   value="R">
-			<@spring.message "perfTest.action.running"/>
+					<@spring.message "perfTest.action.running"/>
 				</label>
 				<label class="checkbox" style="position:relative; margin-left:5px">
 					<input type="radio" id="scheduled_only_checkbox" name="queryFilter"
-					   <#if queryFilter?? && queryFilter == 'S'>checked</#if>
+						   <#if queryFilter?? && queryFilter == 'S'>checked</#if>
 						   value="S">
-			<@spring.message "perfTest.action.scheduled"/>
+					<@spring.message "perfTest.action.scheduled"/>
 				</label>
 				<label class="checkbox" style="position:relative; margin-left:5px">
 					<input type="radio" id="saved_only_checkbox" name="queryFilter"
-					   <#if queryFilter?? && queryFilter == 'SAVED'>checked</#if>
+						   <#if queryFilter?? && queryFilter == 'SAVED'>checked</#if>
 						   value="SAVED">
-			<@spring.message "perfTest.action.saved"/>
+					<@spring.message "perfTest.action.saved"/>
 				</label>
 			</div>
 			<input type="hidden" id="page_number" name="page.page" value="${page.pageNumber}">
@@ -133,9 +136,9 @@
 			<input type="hidden" id="sort" name="sort" value="${sort!'lastModifiedDate,DESC'}">
 		</form>
 
-<@security.authorize access="hasAnyRole('A', 'S')">
-	<#assign isAdmin = true />
-</@security.authorize>
+		<@security.authorize access="hasAnyRole('A', 'S')">
+			<#assign isAdmin = true />
+		</@security.authorize>
 		<table class="table table-striped table-bordered ellipsis" id="test_table" style="width:940px">
 			<colgroup>
 				<col width="30">
@@ -143,9 +146,9 @@
 				<col>
 				<col>
 				<col width="70">
-	<#if clustered>
-		<col width="70">
-	</#if>
+				<#if clustered>
+					<col width="70">
+				</#if>
 				<col width="120">
 				<col width="80">
 				<col width="65">
@@ -162,9 +165,9 @@
 				<th id="test_name" name="testName"><@spring.message "perfTest.list.testName"/></th>
 				<th id="script_name" name="scriptName"><@spring.message "perfTest.list.scriptName"/></th>
 				<th class="nothing"><#if isAdmin??><@spring.message "perfTest.list.owner"/><#else><@spring.message "perfTest.list.modifier.oneLine"/></#if></th>
-	<#if clustered>
-		<th id="region" name="region"><@spring.message "common.region"/></th>
-	</#if>
+				<#if clustered>
+					<th id="region" name="region"><@spring.message "common.region"/></th>
+				</#if>
 				<th id="start_time" name="startTime"><@spring.message "perfTest.list.startTime"/></th>
 				<th class="nothing"><span class="ellipsis"><@spring.message "perfTest.list.threshold"/></th>
 				<th id="tps" name="tps"><@spring.message "perfTest.list.tps"/></th>
@@ -176,112 +179,112 @@
 			</tr>
 			</thead>
 			<tbody>
-	<#assign testList = testListPage.content/>
-	<#if clustered><#assign column=13/><#else><#assign column=12/></#if>
-	<@list list_items=testList others="table_list" colspan="${column}"; test, test_index>
-		<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
-		<#assign deletable = !(test.status.deletable) />
-		<#assign stoppable = !(test.status.stoppable) />
-	<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
-		<td class="center">
-			<input id="check_${test.id}" type="checkbox" class="perf_test checkbox" value="${test.id}"
-				   status="${test.status}" <#if deletable>disabled</#if>>
-		</td>
-		<td class="center" id="row_${test.id}">
-			<div class="ball" id="ball_${test.id}"
-				 data-html="true"
-				 data-content="${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}"
-				 title="<@spring.message "${test.status.springMessageKey}"/>"
-				 rel="popover">
-				<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
-			</div>
-		</td>
-		<td class="ellipsis ${test.dateString!""}">
-			<div class="ellipsis"
-				 rel="popover"
-				 data-html="true"
-				 data-content=
-					 "${((test.description!"")?html)?replace("\n","<br/>")} <p>${test.testComment?html?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${(test.createdUser.userName)!} (${(test.createdUser.userId)!})<#if test.lastModifiedUser??><br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})</#if>"
-				 data-title="<#escape x as x?html>[${test.id?html?replace("\n", "<br/>")}]  ${test.testName!""}</#escape>">
-				<a href="${req.getContextPath()}/perftest/${test.id}"
-				   target="_self"><#escape x as x?html>${test.testName!""}</#escape></a>
-			</div>
-		</td>
-		<td class="ellipsis">
-			<div class="ellipsis"
-				 rel="popover"
-				 data-html="true"
-				 data-content="${test.scriptName}<br/> - <@spring.message "script.list.revision"/> : ${(test.scriptRevision)!'HEAD'}"
-				 title="<@spring.message "perfTest.list.scriptName"/>">
-				<#if isAdmin??>
-					<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.createdUser.userId)!}">${test.scriptName}</a>
-				<#else>
-					<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
-				</#if>
-			</div>
-		</td>
-		<td>
-			<div class="ellipsis"
-				 rel="popover"
-				 title="<@spring.message "perfTest.list.participants"/>"
-				 data-html="true"
-				 data-content="<@spring.message "perfTest.list.owner"/> : ${(test.createdUser.userName)!} (${(test.createdUser.userId)!})<#if test.lastModifiedUser??><br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})</#if>">
-				<#if isAdmin??>
-					${(test.createdUser.userName)!""}
-				<#else>
-					${(test.lastModifiedUser.userName)!""}
-				</#if>
-			</div>
-		</td>
-		<#if clustered>
-			<td class="ellipsis" title="<@spring.message "common.region"/>" data-html="true"
-				data-content="<#if test.region?has_content><@spring.message "${test.region}"/></#if>"> <#if test.region?has_content><@spring.message "${test.region}"/></#if>
-			</td>
-		</#if>
-		<td>
-			<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
-		</td>
-		<td
-			<#if test.isThresholdDuration()>
-					title="<@spring.message "perfTest.list.duration"/>">
-			${test.durationStr}
-			<#else>
-				title="<@spring.message "perfTest.list.runCount"/>" >
-				${test.runCount}
-			</#if>
-		</td>
-		<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>
-		<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.#")}</#if></td>
-		<td>
-			<div class="ellipsis" rel="popover" data-html="true" data-placement="top"
-				 data-content="<@spring.message "perfTest.list.totalTests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.list.successfulTests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.list.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
-				<#if test.tests?? && test.errors?? && (test.tests + test.errors) != 0>
-					${(test.errors/(test.tests +test.errors) * 100)?string("0.##")}%
-				</#if>
-			</div>
-		</td>
-		<td>
-			<div class="ellipsis" rel="popover" data-html="true" data-placement="left"
-				 data-content="<@spring.message "perfTest.list.agent"/> : ${test.agentCount!0?string(",##0")}<br/><@spring.message "perfTest.list.process"/>  : ${test.processes!0?string(",##0")}<br/><@spring.message "perfTest.list.thread"/> : ${test.threads!0?string(",##0")}">
-				${totalVuser?string(",##0")}
-				<div>
-		</td>
-		<td class="center">
-			<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
-			   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
-			   class="icon-download	test-display pointer-cursor" sid="${test.id}"></i>
-			<i title="<@spring.message 'perfTest.action.showReport'/>" id="report_${test.id}"
-			   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
-			   class="icon-picture test-report pointer-cursor" sid="${test.id}"></i>
-			<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
-			   style="<#if deletable>display: none;</#if>"
-			   class="icon-remove test-remove pointer-cursor" sid="${test.id}"></i>
-			<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}"
-			   style="<#if stoppable>display: none;</#if>"
-			   class="icon-stop test-stop pointer-cursor" sid="${test.id}"></i>
-		</td>
-	</tr>
-	</@list>
+			<#assign testList = testListPage.content/>
+			<#if clustered><#assign column=13/><#else><#assign column=12/></#if>
+			<@list list_items=testList others="table_list" colspan="${column}"; test, test_index>
+				<#assign totalVuser = (test.vuserPerAgent) * (test.agentCount) />
+				<#assign deletable = !(test.status.deletable) />
+				<#assign stoppable = !(test.status.stoppable) />
+				<tr id="tr${test.id}" class='${["odd", ""][test_index%2]}'>
+					<td class="center">
+						<input id="check_${test.id}" type="checkbox" class="perf_test checkbox" value="${test.id}"
+							   status="${test.status}" <#if deletable>disabled</#if>>
+					</td>
+					<td class="center" id="row_${test.id}">
+						<div class="ball" id="ball_${test.id}"
+							 data-html="true"
+							 data-content="${"${test.progressMessage}<br/><b>${test.lastProgressMessage}</b>"?replace('\n', '<br>')?html}"
+							 title="<@spring.message "${test.status.springMessageKey}"/>"
+							 rel="popover">
+							<img class="status" src="${req.getContextPath()}/img/ball/${test.status.iconName}"/>
+						</div>
+					</td>
+					<td class="ellipsis ${test.dateString!""}">
+						<div class="ellipsis"
+							 rel="popover"
+							 data-html="true"
+							 data-content=
+							 "${((test.description!"")?html)?replace("\n","<br/>")} <p>${test.testComment?html?replace("\n", "<br/>")}</p><#if test.scheduledTime??><@spring.message "perfTest.list.scheduledTime"/> : ${test.scheduledTime?string('yyyy-MM-dd HH:mm')}<br/></#if><@spring.message "perfTest.list.modifiedTime"/> : <#if test.lastModifiedDate??>${test.lastModifiedDate?string("yyyy-MM-dd HH:mm")}</#if><br/><#if test.tagString?has_content><@spring.message "perfTest.config.tags"/> : ${test.tagString}<br/></#if><@spring.message "perfTest.list.owner"/> : ${(test.createdUser.userName)!} (${(test.createdUser.userId)!})<#if test.lastModifiedUser??><br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})</#if>"
+							 data-title="<#escape x as x?html>[${test.id?html?replace("\n", "<br/>")}]  ${test.testName!""}</#escape>">
+							<a href="${req.getContextPath()}/perftest/${test.id}"
+							   target="_self"><#escape x as x?html>${test.testName!""}</#escape></a>
+						</div>
+					</td>
+					<td class="ellipsis">
+						<div class="ellipsis"
+							 rel="popover"
+							 data-html="true"
+							 data-content="${test.scriptName}<br/> - <@spring.message "script.list.revision"/> : ${(test.scriptRevision)!'HEAD'}"
+							 title="<@spring.message "perfTest.list.scriptName"/>">
+							<#if isAdmin??>
+								<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}&ownerId=${(test.createdUser.userId)!}">${test.scriptName}</a>
+							<#else>
+								<a href="${req.getContextPath()}/script/detail/${test.scriptName}?r=${(test.scriptRevision)!-1}">${test.scriptName}</a>
+							</#if>
+						</div>
+					</td>
+					<td>
+						<div class="ellipsis"
+							 rel="popover"
+							 title="<@spring.message "perfTest.list.participants"/>"
+							 data-html="true"
+							 data-content="<@spring.message "perfTest.list.owner"/> : ${(test.createdUser.userName)!} (${(test.createdUser.userId)!})<#if test.lastModifiedUser??><br/> <@spring.message "perfTest.list.modifier.oneLine"/> : ${test.lastModifiedUser.userName} (${test.lastModifiedUser.userId})</#if>">
+							<#if isAdmin??>
+								${(test.createdUser.userName)!""}
+							<#else>
+								${(test.lastModifiedUser.userName)!""}
+							</#if>
+						</div>
+					</td>
+					<#if clustered>
+						<td class="ellipsis" title="<@spring.message "common.region"/>" data-html="true"
+							data-content="<#if test.region?has_content><@spring.message "${test.region}"/></#if>"> <#if test.region?has_content><@spring.message "${test.region}"/></#if>
+						</td>
+					</#if>
+					<td>
+						<#if test.startTime??>${test.startTime?string('yyyy-MM-dd HH:mm')}</#if>
+					</td>
+					<td
+						<#if test.isThresholdDuration()>
+						title="<@spring.message "perfTest.list.duration"/>">
+						${test.durationStr}
+						<#else>
+							title="<@spring.message "perfTest.list.runCount"/>" >
+							${test.runCount}
+						</#if>
+					</td>
+					<td><#if test.tps??>${(test.tps)?string(",##0.#")}</#if></td>
+					<td><#if test.meanTestTime??>${(test.meanTestTime)?string("0.#")}</#if></td>
+					<td>
+						<div class="ellipsis" rel="popover" data-html="true" data-placement="top"
+							 data-content="<@spring.message "perfTest.list.totalTests"/> : ${((test.tests + test.errors)?string(",##0"))!""}<br/><@spring.message "perfTest.list.successfulTests"/> : ${(test.tests?string(",##0"))!""}<br/><@spring.message "perfTest.list.errors"/> : ${(test.errors?string(",##0"))!""}<br/>">
+							<#if test.tests?? && test.errors?? && (test.tests + test.errors) != 0>
+								${(test.errors/(test.tests +test.errors) * 100)?string("0.##")}%
+							</#if>
+						</div>
+					</td>
+					<td>
+						<div class="ellipsis" rel="popover" data-html="true" data-placement="left"
+							 data-content="<@spring.message "perfTest.list.agent"/> : ${test.agentCount!0?string(",##0")}<br/><@spring.message "perfTest.list.process"/>  : ${test.processes!0?string(",##0")}<br/><@spring.message "perfTest.list.thread"/> : ${test.threads!0?string(",##0")}">
+							${totalVuser?string(",##0")}
+							<div>
+					</td>
+					<td class="center">
+						<i title="<@spring.message 'perfTest.action.showChart'/>" id="show_${test.id}"
+						   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
+						   class="icon-download	test-display pointer-cursor" sid="${test.id}"></i>
+						<i title="<@spring.message 'perfTest.action.showReport'/>" id="report_${test.id}"
+						   style="<#if !test.status.isReportable() || (test.tests!0) + (test.errors!0) == 0>display: none;</#if>"
+						   class="icon-picture test-report pointer-cursor" sid="${test.id}"></i>
+						<i title="<@spring.message "common.button.delete"/>" id="delete_${test.id}"
+						   style="<#if deletable>display: none;</#if>"
+						   class="icon-remove test-remove pointer-cursor" sid="${test.id}"></i>
+						<i title="<@spring.message "common.button.stop"/>" id="stop_${test.id}"
+						   style="<#if stoppable>display: none;</#if>"
+						   class="icon-stop test-stop pointer-cursor" sid="${test.id}"></i>
+					</td>
+				</tr>
+			</@list>
 			</tbody>
 		</table>
 		<div class="pull-right" rel="popover" style="float;margin-top:-26px;margin-right:-30px;cursor: pointer"
@@ -290,15 +293,15 @@
 			 id="introButton">
 			<code>Tip</code>
 		</div>
-<#if testList?has_content>
-	<#include "../common/paging.ftl">
-	<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
-<script type="text/javascript">
-	function doSubmit(page) {
-		getList(Math.max(page - 1, 0));
-	}
-</script>
-</#if>
+		<#if testList?has_content>
+			<#include "../common/paging.ftl">
+			<@paging  testListPage.totalElements testListPage.number+1 testListPage.size 10 ""/>
+			<script type="text/javascript">
+				function doSubmit(page) {
+					getList(Math.max(page - 1, 0));
+				}
+			</script>
+		</#if>
 	</div>
 </div>
 <#include "../common/copyright.ftl">
@@ -368,8 +371,8 @@
 				bootbox.alert("<@spring.message "perfTest.message.delete.alert"/>", "<@spring.message "common.button.ok"/>");
 				return;
 			}
-			for (var i = 0;i<list.length;i++){
-				if ($("#report_" + ids[i]).css('display')!==('none')){
+			for (var i = 0; i < list.length; i++) {
+				if ($("#report_" + ids[i]).css('display') !== ('none')) {
 					reportCount++;
 				}
 			}
@@ -392,7 +395,7 @@
 
 		$("i.test-report").click(function () {
 			var id = $(this).attr("sid");
-			window.open("${req.getContextPath()}/perftest/"+ id +"/detail_report?reportids="+id);
+			window.open("${req.getContextPath()}/perftest/" + id + "/detail_report?reportids=" + id);
 		});
 
 		$("i.test-display").click(function () {
@@ -539,7 +542,7 @@
 		ids.sort(function sortNumber(a, b) {
 			return a - b
 		});
-		window.open("${req.getContextPath()}/perftest/"+ ids[0] +"/detail_report?reportids="+ids);
+		window.open("${req.getContextPath()}/perftest/" + ids[0] + "/detail_report?reportids=" + ids);
 	}
 
 	function deleteTests(ids) {
@@ -565,7 +568,7 @@
 	}
 
 	function cloneAndStartTests(ids) {
-		for(var t = Date.now();Date.now() - t <= 100;);
+		for (var t = Date.now(); Date.now() - t <= 100;) ;
 		var ajaxObj = new AjaxObj("/perftest/api/" + ids + "/clone_and_start",
 			"<@spring.message "perfTest.message.batch.start.success"/>",
 			"<@spring.message "perfTest.message.batch.start.error"/>");

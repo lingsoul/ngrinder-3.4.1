@@ -14,7 +14,7 @@
 package net.grinder.util;
 
 import HTTPClient.NVPair;
-import net.grinder.util.CsvReader;
+import com.csvreader.CsvReader;
 import net.grinder.common.GrinderProperties;
 import net.grinder.script.Grinder;
 import net.grinder.script.InternalScriptContext;
@@ -181,7 +181,7 @@ public abstract class GrinderUtils {
 	 * @param startStrLength 截取长度
 	 * @return 截取字符串
 	 */
-	public String getCutStr(String inputStr, String startStr, int startStrLength){
+	public static String getCutStr(String inputStr, String startStr, int startStrLength){
 		int startIdx = inputStr.indexOf(startStr)+startStr.length();
 		return inputStr.substring(startIdx,startIdx+startStrLength);
 	}
@@ -193,7 +193,7 @@ public abstract class GrinderUtils {
 	 * @param endStr 字符串右边界
 	 * @return 截取字符串
 	 */
-	public String getCutStrLR(String inputStr, String startStr, String endStr){
+	public static String getCutStrLR(String inputStr, String startStr, String endStr){
 		int startIdx = inputStr.indexOf(startStr)+startStr.length();
 		int endIdx = inputStr.indexOf(endStr);
 		return inputStr.substring(startIdx,endIdx);

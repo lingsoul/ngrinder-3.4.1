@@ -1,3 +1,3 @@
 #!/bin/sh
-curpath=`dirname $0`
-nohup ${curpath}/run_agent.sh -o$@ > /dev/null & 2>&1
+curpath=`pwd |awk -F '/' '{print $NF}'`
+nohup ./run_agent.sh -o  -ah ~/.${curpath} --host-id ${curpath} $@ > /dev/null & 2>&1

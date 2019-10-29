@@ -1258,8 +1258,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < dataInterval) {
 					skipCount++;
+					line = br.readLine();
 				} else {
-					skipCount = 1;
+					skipCount = 0;
 					String[] datalist = StringUtils.split(line, ",");
 					if ("null".equals(datalist[4]) || "undefined".equals(datalist[4])) {
 						sbUsedMem.append("null").append(",");
@@ -1451,8 +1452,9 @@ public class PerfTestService extends AbstractPerfTestService implements Controll
 			while (StringUtils.isNotBlank(line)) {
 				if (skipCount < interval) {
 					skipCount++;
+					line = br.readLine();
 				} else {
-					skipCount = 1;
+					skipCount = 0;
 					String[] records = StringUtils.split(line, ",");
 					for (int i = 0; i < records.length; i++) {
 						if ("null".equals(records[i]) || "undefined".equals(records[i])) {

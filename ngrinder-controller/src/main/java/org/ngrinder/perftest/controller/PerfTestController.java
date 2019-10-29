@@ -137,11 +137,11 @@ public class PerfTestController extends BaseController {
 	                     @PageableDefault(page = 0, size = 10) Pageable pageable, ModelMap model) {
 		pageable = new PageRequest(pageable.getPageNumber(), pageable.getPageSize(),
 						defaultIfNull(pageable.getSort(),
-						new Sort(Direction.DESC, "lastModifiedDate")));
+						new Sort(Direction.DESC, "id")));
 		Page<PerfTest> tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		if (tests.getNumberOfElements() == 0) {
 			pageable = new PageRequest(0, pageable.getPageSize(), defaultIfNull(pageable.getSort(),
-							new Sort(Direction.DESC, "lastModifiedDate")));
+							new Sort(Direction.DESC, "id")));
 			tests = perfTestService.getPagedAll(user, query, tag, queryFilter, pageable);
 		}
 		annotateDateMarker(tests);

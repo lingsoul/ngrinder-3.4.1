@@ -7,42 +7,42 @@
 		</fieldSet>
 		<div class="form-horizontal form-horizontal-3" style="margin-top:10px;">
 			<fieldset>
-			<@control_group label_message_key="perfTest.running.totalVusers">
-				<strong>${test.vuserPerAgent * test.agentCount}</strong>
-				<span class="badge badge-info pull-right">
+				<@control_group label_message_key="perfTest.running.totalVusers">
+					<strong>${test.vuserPerAgent * test.agentCount}</strong>
+					<span class="badge badge-info pull-right">
 					<@spring.message "perfTest.running.running"/> <span id="running_thread"></span>
 				</span>
-			</@control_group>
-			<@control_group label_message_key="perfTest.running.totalProcesses">
-				${test.processes * test.agentCount}
-				<span class="badge badge-info pull-right">
+				</@control_group>
+				<@control_group label_message_key="perfTest.running.totalProcesses">
+					${test.processes * test.agentCount}
+					<span class="badge badge-info pull-right">
 					<@spring.message "perfTest.running.running"/> <span id="running_process"></span>
 				</span>
-			</@control_group>
+				</@control_group>
 				<hr>
-			<@control_group label_message_key="perfTest.config.targetHost">
-				<@list list_items = test.targetHosts?split(",") ; host >
-				${host?trim}<br>
-				</@list>
-			</@control_group>
+				<@control_group label_message_key="perfTest.config.targetHost">
+					<@list list_items = test.targetHosts?split(",") ; host >
+						${host?trim}<br>
+					</@list>
+				</@control_group>
 				<hr>
 				<div class="control-group">
-				<#if test.threshold == "D">
-					<@control_group label_message_key="perfTest.running.duration">
-						<span>${test.durationStr}</span>
-						<code>HH:MM:SS</code>
-					  	<span class="badge badge-success pull-right">
+					<#if test.threshold == "D">
+						<@control_group label_message_key="perfTest.running.duration">
+							<span>${test.durationStr}</span>
+							<code>HH:MM:SS</code>
+							<span class="badge badge-success pull-right">
 							<span id="running_count"></span> <@spring.message "perfTest.running.runCount"/>
 						</span>
-					</@control_group>
-				<#else>
-					<@control_group label_message_key="perfTest.running.totalRunCount">
-						${test.runCount * test.agentCount * test.vuserPerAgent}
-						<span class="badge badge-success pull-right">
+						</@control_group>
+					<#else>
+						<@control_group label_message_key="perfTest.running.totalRunCount">
+							${test.runCount * test.agentCount * test.vuserPerAgent}
+							<span class="badge badge-success pull-right">
 							<@spring.message "perfTest.running.runCount"/> <span id="running_count"></span>
 						</span>
-					</@control_group>
-				</#if>
+						</@control_group>
+					</#if>
 				</div>
 				<div class="control-group">
 					<label class="control-label"><@spring.message "perfTest.running.targetState"/></label>
@@ -67,10 +67,10 @@
 	<div class="span7">
 		<fieldSet>
 			<legend>
-			<@spring.message "perfTest.running.tpsGraph"/>
+				<@spring.message "perfTest.running.tpsGraph"/>
 				<span id="running_time" class="badge badge-success">&nbsp;</span>
 				<a id="stop_test_btn" class="btn btn-danger pull-right intro" data-step="5" data-intro="<@spring.message 'intro.running.stopButton'/>">
-				<@spring.message "common.button.stop"/>
+					<@spring.message "common.button.stop"/>
 				</a>
 			</legend>
 		</fieldSet>
@@ -103,9 +103,9 @@
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
-							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meantime'/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
-							<th class="no-click" title='<@spring.message "perfTest.running.meanTimeToFirstByte"/>'>MTBF</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meanTimeToFirstByte'/>">MTTFB</th>
 							<th class="no-click" title="<@spring.message 'perfTest.running.responseBytePerSecond.full'/>">
 								<@spring.message "perfTest.running.responseBytePerSecond"/>
 							</th>
@@ -133,15 +133,15 @@
 							<th class="no-click"><@spring.message "perfTest.running.testName"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.success"/></th>
 							<th class="no-click"><@spring.message "perfTest.running.errors"/></th>
-							<th class="no-click" title="<@spring.message "perfTest.running.meantime"/>">MTT</th>
+							<th class="no-click" title="<@spring.message 'perfTest.running.meantime'/>">MTT</th>
 							<th class="no-click"><@spring.message "perfTest.running.tps"/></th>
 							<th class="no-click"
 								title="<@spring.message 'perfTest.running.peakTPS.full'/>">
-									<@spring.message "perfTest.running.peakTPS"/>
+								<@spring.message "perfTest.running.peakTPS"/>
 							</th>
 							<th class="no-click"
 								title="<@spring.message 'perfTest.running.responseBytePerSecond.full'/>">
-									<@spring.message "perfTest.running.responseBytePerSecond"/>
+								<@spring.message "perfTest.running.responseBytePerSecond"/>
 							</th>
 						</tr>
 						</thead>
@@ -157,17 +157,14 @@
 
 <script src="${req.getContextPath()}/js/queue.js?${nGrinderVersion}"></script>
 <script>
-
 	//@ sourceURL=/perftest/running
 	var curPerf;
 	var curAgentStat;
 	var curMonitorStat;
 	var tpsQueue = new Queue(60 / ${test.samplingInterval?c});
 	var tpsChart = new Chart('running_tps_chart', [tpsQueue.getArray()], ${test.samplingInterval?c});
-
 	var samplingAjax = new AjaxObj("/perftest/{testId}/api/sample");
 	samplingAjax.params = { testId: ${(test.id!0)?c} };
-
 	function showLastPerTestResult(container, statistics) {
 		var existing = container.find("tr");
 		for (var i = 0; i < statistics.length; i++) {
@@ -188,8 +185,6 @@
 			$(record).html(output);
 		}
 	}
-
-
 	function showAccumulatedPerTestResult(container, statistics) {
 		var existing = container.find("tr");
 		for (var i = 0; i < statistics.length; i++) {
@@ -210,7 +205,6 @@
 			$(record).html(output);
 		}
 	}
-
 	samplingAjax.success = function (res) {
 		if (res.status == "TESTING") {
 			/** @namespace res.perf */
@@ -239,13 +233,11 @@
 			}
 		}
 	};
-
 	samplingAjax.error = function () {
 		if ($('#running_section_tab:hidden')[0]) {
 			window.clearInterval(objTimer);
 		}
 	};
-
 	var $runningTime = $("#running_time");
 	var $runningProcess = $("#running_process");
 	var $runningThread = $("#running_thread");
@@ -254,7 +246,6 @@
 	var $monitorState = $("#monitor_state");
 	var $accumulatedSampleResult = $("#accumulated_sample_result");
 	var $lastSampleResult = $("#last_sample_result");
-
 	function toNum(num, precision) {
 		if (num == undefined) {
 			return "-";
@@ -262,27 +253,25 @@
 		precision = precision || 0;
 		return $.number(num, precision);
 	}
-
 	function createMonitoringStatusString(status) {
 		var monitorStatusString = "<ul>";
 		$.each(status, function (name, value) {
 			monitorStatusString = monitorStatusString +
-					"<li class='monitor-state' style='height:20px'><div style='width:100%;' class='ellipsis'>";
+				"<li class='monitor-state' style='height:20px'><div style='width:100%;' class='ellipsis'>";
 			monitorStatusString = monitorStatusString +
-					"<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
-					" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
-					" MEM-" + formatPercentage(null, ((value.totalMemory - value.freeMemory) / value.totalMemory) * 100);
+				"<span title='" + name + "'><b>" + getShortenString(name) + "</b></span>" +
+				" CPU-" + formatPercentage(null, value.cpuUsedPercentage) +
+				" MEM-" + formatPercentage(null, ((value.totalMemory - value.freeMemory) / value.totalMemory) * 100);
 			if (value.receivedPerSec != 0 || value.sentPerSec != 0) {
 				monitorStatusString = monitorStatusString + "/" +
-						" RX-" + formatNetwork(null, value.receivedPerSec) +
-						" TX-" + formatNetwork(null, value.sentPerSec) +
-						"</dv></li>";
+					" RX-" + formatNetwork(null, value.receivedPerSec) +
+					" TX-" + formatNetwork(null, value.sentPerSec) +
+					"</div></li>";
 			}
 		});
 		monitorStatusString += "</ul>";
 		return monitorStatusString;
 	}
-
 	function showRunTime(s) {
 		if (s < 60) {
 			return "" + s + "s";
@@ -295,16 +284,13 @@
 		}
 		return "" + parseInt(s / 86400) + "d " + parseInt(s % 86400 / 3600) + "h " + parseInt(s % 86400 % 3600 / 60) + "m " + (s % 86400 % 3600 % 60) + "s";
 	}
-
 	function stopTests(ids) {
 		var ajaxObj = new AjaxPutObj("/perftest/api?action=stop",
-				{ "ids" : ids },
-				"<@spring.message "perfTest.message.stop.success"/>",
-				"<@spring.message "perfTest.message.stop.error"/>");
+			{ "ids" : ids },
+			"<@spring.message "perfTest.message.stop.success"/>",
+			"<@spring.message "perfTest.message.stop.error"/>");
 		ajaxObj.call();
-
 	}
-
 	$("#stop_test_btn").click(function () {
 		bootbox.confirm("<@spring.message "perfTest.message.stop.confirm"/>", "<@spring.message "common.button.cancel"/>", "<@spring.message "common.button.ok"/>", function (result) {
 			if (result) {
@@ -312,7 +298,6 @@
 			}
 		});
 	});
-
 	var $samplingTab = $('#sample_tab');
 	$samplingTab.find('a').click(function (e) {
 		e.preventDefault();

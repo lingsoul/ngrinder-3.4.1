@@ -26,6 +26,9 @@ import HTTPClient.CookieModule
 import HTTPClient.HTTPResponse
 import HTTPClient.NVPair
 
+import net.sf.json.*
+import java.text.*
+
 /**
  * A simple example using the HTTP plugin that shows the retrieval of a
  * single page via HTTP.
