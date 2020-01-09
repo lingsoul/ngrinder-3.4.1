@@ -48,7 +48,7 @@
 			drawOptionalChart("min_time_first_byte_chart", data.Mean_time_to_first_byte.data, interval,
 				data.Mean_time_to_first_byte.labels);
 			drawOptionalChart("user_defined_chart", data.User_defined.data, interval, data.User_defined.labels);
-			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
+			<#--createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");-->
 		};
 		ajaxObj.call();
 	}

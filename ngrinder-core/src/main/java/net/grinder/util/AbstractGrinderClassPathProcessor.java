@@ -39,6 +39,7 @@ public abstract class AbstractGrinderClassPathProcessor {
 	private final List<String> usefulJarList = newArrayList();
 	private final List<String> uselessJarList = newArrayList();
 
+
 	/**
 	 * Constructor.
 	 */
@@ -70,6 +71,8 @@ public abstract class AbstractGrinderClassPathProcessor {
 			}
 
 		}
+
+
 		return StringUtils.join(classPathList, File.pathSeparator);
 	}
 
@@ -167,6 +170,19 @@ public abstract class AbstractGrinderClassPathProcessor {
 		usefulJarList.add("ezmorph");
 		usefulJarList.add("commons-beanutils");
 		usefulJarList.add("json-lib");
+
+		//新增dubbo性能测试依赖jar包
+		usefulJarList.add("activation");
+		usefulJarList.add("aopalliance");
+		usefulJarList.add("dubbo");
+		usefulJarList.add("javassist");
+		usefulJarList.add("jline");
+		usefulJarList.add("log4j");
+		usefulJarList.add("mail");
+		usefulJarList.add("netty");
+		usefulJarList.add("zkclient");
+		usefulJarList.add("zookeeper");
+
 	}
 
 	protected abstract void initMore();
