@@ -306,6 +306,8 @@
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/../lib/universal-analytics-java-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -520,6 +522,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<webResources>
+						<resource>
+							<directory>${project.basedir}/../lib</directory>
+							<targetPath>WEB-INF/lib/</targetPath>
+							<includes>
+								<include>**/*.jar</include>
+							</includes>
+						</resource>
+					</webResources>
 					<archive>
 						<manifest>
 							<mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>

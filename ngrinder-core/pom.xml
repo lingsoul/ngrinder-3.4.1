@@ -43,6 +43,8 @@
 			<groupId>sigar</groupId>
 			<artifactId>sigar-native</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/../lib/sigar-native-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.python</groupId>
