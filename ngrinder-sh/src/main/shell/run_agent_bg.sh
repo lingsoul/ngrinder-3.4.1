@@ -11,5 +11,9 @@ if [ "$curpath" != "ngrinder-agent" ];then
          sed -i "" "s/.*agent.region=.*/agent.region=`echo NONE_owned_$owned_user`/" __agent.conf
          echo mac agent.region=$owned_user
      fi
+    nohup ./run_agent.sh -o  -ah ~/.${curpath} --host-id ${curpath} $@ > /dev/null & 2>&1
+else
+    echo local
+    curpath=`dirname $0`
+    nohup ${curpath}/run_agent.sh -o $@ > /dev/null & 2>&1
 fi
-nohup ./run_agent.sh -o  -ah ~/.${curpath} --host-id ${curpath} $@ > /dev/null & 2>&1

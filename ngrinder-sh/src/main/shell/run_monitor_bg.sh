@@ -1,6 +1,5 @@
 #!/bin/sh
 curpath=`dirname $0`
-cd ${curpath}
 os=`uname -a`
 
 if ( echo ${os} |grep -q "inux" );then
@@ -12,5 +11,4 @@ elif ( echo ${os} |grep -q "Darwin" );then
     sed -i "" "s/.*monitor.binding_ip=.*/monitor.binding_ip=`echo $local_ip`/" __agent.conf
     echo mac replace ip: $local_ip
 fi
-
 nohup ${curpath}/run_monitor.sh -o $@ > /dev/null & 2>&1
