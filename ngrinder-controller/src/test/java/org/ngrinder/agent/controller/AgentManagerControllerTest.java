@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.agent.controller;
 
@@ -24,6 +24,7 @@ import org.ngrinder.agent.repository.AgentManagerRepository;
 import org.ngrinder.agent.service.AgentManagerService;
 import org.ngrinder.infra.config.Config;
 import org.ngrinder.model.AgentInfo;
+import org.ngrinder.user.service.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -54,6 +55,9 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	@Autowired
 	private Config config;
 
+	@Autowired
+	private UserContext userContext;
+
 	@Before
 	public void setMockRequest() {
 		MockHttpServletRequest req = new MockHttpServletRequest();
@@ -72,7 +76,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 	public void testGetAgentList() {
 
 		ModelMap model = new ModelMap();
-		agentController.getAll("", model);
+		agentController.getAll(userContext.getCurrentUser(), "", model);
 
 		// create a temp download dir and file for this function
 		File directory = config.getHome().getDownloadDirectory();
@@ -93,7 +97,7 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		}
 
 		model.clear();
-		agentController.getAll("", model);
+		agentController.getAll(userContext.getCurrentUser(), "", model);
 		Collection<AgentInfo> agents = (Collection<AgentInfo>) model.get("agents");
 	}
 
@@ -149,5 +153,5 @@ public class AgentManagerControllerTest extends AbstractNGrinderTransactionalTes
 		JSONObject obj = new JSONObject(result);
 		assertThat(0, is(obj.get("availableAgentCount")));
 	}
-	
+
 }

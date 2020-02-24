@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.common.util;
 
@@ -47,14 +47,16 @@ public class PropertiesWrapper {
 
 	public boolean exist(String key) {
 		String value = this.properties.getProperty(key);
-		if (value == null) {
-			List<String> keys = propertiesKeyMapper.getKeys(key);
-			if (keys != null && !keys.isEmpty()) {
-				for (String each : keys) {
-					value = this.properties.getProperty(each);
-					if (value != null) {
-						return true;
-					}
+		if (value != null) {
+			return true;
+		}
+
+		List<String> keys = propertiesKeyMapper.getKeys(key);
+		if (keys != null && !keys.isEmpty()) {
+			for (String each : keys) {
+				value = this.properties.getProperty(each);
+				if (value != null) {
+					return true;
 				}
 			}
 		}

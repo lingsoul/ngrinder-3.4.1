@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config xmlns="http://www.navercorp.com/lucy-xss-servlet">
-   <defenders>
-       <defender>
-           <name>xssPreventerDefender</name>
-           <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssPreventerDefender</class>
-       </defender>
-   </defenders>
+    <defenders>
+        <defender>
+            <name>xssPreventerDefender</name>
+            <class>com.navercorp.lucy.security.xss.servletfilter.defender.XssPreventerDefender</class>
+        </defender>
+    </defenders>
 
     <!-- default defender -->
     <default>
@@ -16,6 +16,7 @@
     <global>
         <params>
             <param name="options" useDefender="false" />
+            <param name="content" useDefender="false" />
         </params>
     </global>
 

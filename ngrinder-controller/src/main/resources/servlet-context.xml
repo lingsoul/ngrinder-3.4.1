@@ -51,6 +51,7 @@
 		<property name="freemarkerSettings">
 			<props>
 				<prop key="defaultEncoding">UTF-8</prop>
+                <prop key="template_update_delay">0</prop>
 			</props>
 		</property>
 	</bean>

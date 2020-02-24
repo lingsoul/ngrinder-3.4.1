@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
-			<version>2.2.1</version>
+			<version>2.4.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
@@ -32,29 +32,6 @@
 				<exclusion>
 					<groupId>org.hamcrest</groupId>
 					<artifactId>hamcrest-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>net.sf.grinder</groupId>
-			<artifactId>grinder</artifactId>
-			<version>3.9.1</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>jython</artifactId>
-					<groupId>org.python</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>clojure</artifactId>
-					<groupId>org.clojure</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jedit-syntax</artifactId>
-					<groupId>net.sf.jedit-syntax</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>grinder-xmlbeans</artifactId>
-					<groupId>net.sf.grinder</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>

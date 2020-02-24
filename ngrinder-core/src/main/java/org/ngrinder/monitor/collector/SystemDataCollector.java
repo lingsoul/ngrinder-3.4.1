@@ -1,4 +1,4 @@
-/* 
+/*
  * Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
@@ -9,7 +9,7 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License. 
+ * limitations under the License.
  */
 package org.ngrinder.monitor.collector;
 
@@ -19,6 +19,7 @@ import org.ngrinder.common.constants.MonitorConstants;
 import org.ngrinder.common.util.NoOp;
 import org.ngrinder.monitor.mxbean.SystemMonitoringData;
 import org.ngrinder.monitor.share.domain.BandWidth;
+import org.ngrinder.monitor.share.domain.DiskBusy;
 import org.ngrinder.monitor.share.domain.SystemInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,12 +28,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * System data collector class.
  *
  * @author Mavlarn
  * @since 2.0
+ * @modify lingj
  */
 public class SystemDataCollector extends DataCollector implements MonitorConstants {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SystemDataCollector.class);
@@ -42,6 +46,8 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 	private SystemInfo prev = null;
 
 	private String[] netInterfaces = new String[]{};
+
+	private List<String> localDevNames = new ArrayList<String>(){};
 
 	private File customDataFile = null;
 
@@ -66,10 +72,12 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			sigar = new Sigar();
 			try {
 				netInterfaces = sigar.getNetInterfaceList();
+				localDevNames = getlocalDevNames();
 				prev = new SystemInfo();
 				prev.setBandWidth(getNetworkUsage());
+				prev.setDiskBusy(getDiskUsage());
 			} catch (SigarException e) {
-				LOGGER.error("Network usage data retrieval failed.", e);
+				LOGGER.error("Network or Disk usage data retrieval failed.", e);
 			}
 		}
 	}
@@ -93,17 +101,35 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			BandWidth networkUsage = getNetworkUsage();
 			BandWidth bandWidth = networkUsage.adjust(prev.getBandWidth());
 			systemInfo.setBandWidth(bandWidth);
-			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+
+			//add by lingj,新增磁盘读写速率
+			DiskBusy diskUsage = getDiskUsage();
+			DiskBusy diskBusy = diskUsage.adjust(prev.getDiskBusy());
+			systemInfo.setDiskBusy(diskBusy);
+//			systemInfo.setCPUUsedPercentage((float) sigar.getCpuPerc().getCombined() * 100);
+			systemInfo.setCPUUsedPercentage((float) (1-sigar.getCpuPerc().getIdle()) * 100); //修改CPU使用率为1-idle%
+			systemInfo.setCpuWait((float) (sigar.getCpuPerc().getWait()) * 100); //CPU等待率
 			Cpu cpu = sigar.getCpu();
 			systemInfo.setTotalCpuValue(cpu.getTotal());
 			systemInfo.setIdleCpuValue(cpu.getIdle());
 			Mem mem = sigar.getMem();
 			systemInfo.setTotalMemory(mem.getTotal() / 1024L);
 			systemInfo.setFreeMemory(mem.getActualFree() / 1024L);
+
+			systemInfo.setMemUsedPercentage(mem.getUsedPercent()); //内存使用率
 			systemInfo.setSystem(OperatingSystem.IS_WIN32 ? SystemInfo.System.WINDOW : SystemInfo.System.LINUX);
 			systemInfo.setCustomValues(getCustomMonitorData());
+
+			if (systemInfo.getSystem() == SystemInfo.System.LINUX) {
+				IoUsageCollector iousage = new IoUsageCollector();
+				systemInfo.setDiskUtil(iousage.getIoUsage());
+			}
+
+			double load = sigar.getLoadAverage()[0];
+			systemInfo.setLoad(load);
+
 		} catch (Throwable e) {
-			LOGGER.error("Error while getting system perf data:{}", e.getMessage());
+			LOGGER.debug("Error while getting system perf data:{}", e);
 			LOGGER.debug("Error trace is ", e);
 		}
 		prev = systemInfo;
@@ -128,6 +154,45 @@ public class SystemDataCollector extends DataCollector implements MonitorConstan
 			}
 		}
 		return bandWidth;
+	}
+
+	/**
+	 * Get the current Disk Read and Write usage.
+	 *
+	 * @return DiskBusy
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 * @author lingj
+	 */
+	public DiskBusy getDiskUsage() throws SigarException {
+		DiskBusy diskBusy = new DiskBusy(System.currentTimeMillis());
+		for (String each : localDevNames) {
+			try {
+				DiskUsage diskUsage = sigar.getDiskUsage(each);
+				diskBusy.setRead(diskBusy.getRead() + diskUsage.getReadBytes());
+				diskBusy.setWrite(diskBusy.getWrite() + diskUsage.getWriteBytes());
+			} catch (Exception e) {
+				NoOp.noOp();
+			}
+		}
+		return diskBusy;
+	}
+
+	/**
+	 * Get the localDevNames.
+	 *
+	 * @return localDevNames
+	 * @throws SigarException thrown when the underlying lib is not linked
+	 * @author lingj
+	 */
+	public List<String> getlocalDevNames() throws SigarException {
+		FileSystem[] fileSystems = sigar.getFileSystemList();
+		List<String> localDevNames = new ArrayList<String>();
+		for(FileSystem fileSystem : fileSystems) {
+			if(fileSystem.getType() == FileSystem.TYPE_LOCAL_DISK) {
+				localDevNames.add(fileSystem.getDevName());
+			}
+		}
+		return localDevNames;
 	}
 
 	private String getCustomMonitorData() {

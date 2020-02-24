@@ -10,19 +10,19 @@
 <h6>
 	TPS
 	<span rel="popover"
-		data-content='<@spring.message "perfTest.report.tps.help"/>'
-		title='<@spring.message "perfTest.report.tps"/>'
-		data-html='true' id="tps_title">
+		  data-content='<@spring.message "perfTest.report.tps.help"/>'
+		  title='<@spring.message "perfTest.report.tps"/>'
+		  data-html='true' id="tps_title">
 		<i class="icon-question-sign pointer-cursor" style="vertical-align:middle;"></i>
 	</span>
 </h6>
 <div class="bigchart" id="tps_chart"></div>
 <h6><@spring.message "perfTest.report.header.meantime"/>&nbsp;(ms)</h6>
 <div class="chart" id="mean_time_chart"></div>
-<h6 id="min_time_first_byte_chart_header"><@spring.message "perfTest.report.header.meantimeToFirstByte"/>&nbsp;(ms)</h6>
-<div class="chart" id="min_time_first_byte_chart"></div>
 <h6 id="vuser_chart_header"><@spring.message "perfTest.report.header.vuser"/></h6>
 <div class="chart" id="vuser_chart"></div>
+<h6 id="min_time_first_byte_chart_header"><@spring.message "perfTest.report.header.meantimeToFirstByte"/>&nbsp;(ms)</h6>
+<div class="chart" id="min_time_first_byte_chart"></div>
 <h6 id="user_defined_chart_header"><@spring.message "perfTest.report.header.userDefinedChart"/></h6>
 <div class="chart" id="user_defined_chart"></div>
 <h6><@spring.message "perfTest.report.header.errors"/></h6>
@@ -45,8 +45,8 @@
 			drawChart("mean_time_chart", data.Mean_Test_Time_ms.data, interval, data.Mean_Test_Time_ms.labels);
 			drawChart('vuser_chart', data.Vuser.data, interval, data.Vuser.labels);
 			drawChart('error_chart', data.Errors.data, interval, data.Errors.labels);
-            drawOptionalChart("min_time_first_byte_chart", data.Mean_time_to_first_byte.data, interval,
-					data.Mean_time_to_first_byte.labels);
+			drawOptionalChart("min_time_first_byte_chart", data.Mean_time_to_first_byte.data, interval,
+				data.Mean_time_to_first_byte.labels);
 			drawOptionalChart("user_defined_chart", data.User_defined.data, interval, data.User_defined.labels);
 			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
 		};

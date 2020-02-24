@@ -3,14 +3,33 @@
 <div class="page-header page-header">
 	<h4>Monitor</h4>
 </div>
-<h6 id="cpu_usage_chart_header">CPU</h6>
+<h6 id="cpu_usage_chart_header">CPU(%)，建议值：小于75%</h6>
 <div class="chart" id="cpu_usage_chart"></div>
-<h6 id="mem_usage_chart_header">Used Memory</h6>
+
+<h6 id="mem_usage_chart_header">Memory(%)，建议值：小于80%</h6>
 <div class="chart" id="mem_usage_chart"></div>
-<h6 id="received_byte_per_sec_chart_header">Received Byte Per Second</h6>
+
+<h6 id="received_byte_per_sec_chart_header">Received (byte/s)</h6>
 <div class="chart" id="received_byte_per_sec_chart"></div>
-<h6 id="sent_byte_per_sec_chart_header">Sent Byte Per Second</h6>
+
+<h6 id="sent_byte_per_sec_chart_header">Sent (byte/s)</h6>
 <div class="chart" id="sent_byte_per_sec_chart"></div>
+
+<h6 id="diskbusy_chart_header">Disk IO_util(%)</h6>
+<div class="chart" id="diskbusy_chart"></div>
+
+<h6 id="read_byte_per_sec_chart_header">Disk Read (byte/s)</h6>
+<div class="chart" id="read_byte_per_sec_chart"></div>
+
+<h6 id="write_byte_per_sec_chart_header">Disk Write (byte/s)</h6>
+<div class="chart" id="write_byte_per_sec_chart"></div>
+
+<h6 id="load_chart_header">Load-average(one-minute)</h6>
+<div class="chart" id="load_chart"></div>
+
+<h6 id="cpuwait_chart_header">CPU_Wait(%)</h6>
+<div class="chart" id="cpuwait_chart"></div>
+
 <h6 id="custom_monitor_chart_1_header">Custom Monitor Chart 1</h6>
 <div class="chart" id="custom_monitor_chart_1"></div>
 <h6 id="custom_monitor_chart_2_header">Custom Monitor Chart 2</h6>
@@ -32,15 +51,31 @@
 		};
 		ajaxObj.success = function (data) {
 			var interval = data.interval;
+			//var interval = data.chartInterval;
+
+			// modify by lingj
+			//cpu使用率
 			drawChart('cpu_usage_chart', [data.cpu], formatPercentage, interval);
-			drawChart('mem_usage_chart', [data.memory], formatMemory, interval);
+			// 内存使用率
+			drawChart('mem_usage_chart', [data.memused], formatPercentage, interval);
+			// DiskBusy
+			drawChart('diskbusy_chart', [data.diskbusy], formatPercentage, interval);
+			drawChart("read_byte_per_sec_chart", [data.read], formatNetwork, interval);
+			drawChart("write_byte_per_sec_chart", [data.write], formatNetwork, interval);
+			//网络使用率
 			drawChart("received_byte_per_sec_chart", [data.received], formatNetwork, interval);
 			drawChart("sent_byte_per_sec_chart", [data.sent], formatNetwork, interval);
+			// CPU_Load
+			drawChart('load_chart', [data.load], formatNetwork, interval);
+			// CPU_Wait
+			drawChart('cpuwait_chart', [data.cpuwait], formatPercentage, interval);
+
 			drawOptionalChart("custom_monitor_chart_1", [data.customData1], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_2", [data.customData2], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_3", [data.customData3], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_4", [data.customData4], formatNetwork, interval);
 			drawOptionalChart("custom_monitor_chart_5", [data.customData5], formatNetwork, interval);
+
 			createChartExportButton("<@spring.message "perfTest.report.exportImg.button"/>", "<@spring.message "perfTest.report.exportImg.title"/>");
 		};
 		ajaxObj.call();
@@ -57,6 +92,5 @@
 		}
 	}
 	getMonitorDataAndDraw(${id}, "${targetIP}");
-
 
 </script>

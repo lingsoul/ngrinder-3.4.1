@@ -18,12 +18,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import java.io.Serializable;
 
 /**
- * Network Usage Calculation Class. This class get the bandwidth so far and calc RX, TX.
+ * Disk Usage Calculation Class. This class get the Disk Read and Write so far and calc ReadPerSec, WritePerSec.
  *
- * @author JunHo Yoon
+ * @author lingj
  *
  */
-public class BandWidth implements Serializable {
+public class DiskBusy implements Serializable {
 
 	/**
 	 * UUID.
@@ -36,7 +36,7 @@ public class BandWidth implements Serializable {
 	 * Default constructor.
 	 */
 	@SuppressWarnings("UnusedDeclaration")
-	public BandWidth() {
+	public DiskBusy() {
 	}
 
 	/**
@@ -44,26 +44,26 @@ public class BandWidth implements Serializable {
 	 *
 	 * @param time	current timestamp.
 	 */
-	public BandWidth(long time) {
+	public DiskBusy(long time) {
 		this.time = time;
 	}
 
-	private long received;
-	private long sent;
+	private long read;
+	private long write;
 
-	private long receivedPerSec;
-	private long sentPerSec;
+	private long readPerSec;
+	private long writePerSec;
 
 	/**
-	 * Calculate the bandWith by subtracting prev bandwidth.
+	 * Calculate the diskBusy by subtracting prev diskBusy.
 	 *
-	 * @param bandWidth	bandWidth adjusted against.
-	 * @return adjusted bandWidth.
+	 * @param diskBusy	diskBusy adjusted against.
+	 * @return adjusted diskBusy.
 	 */
-	public BandWidth adjust(BandWidth bandWidth) {
-		float rate = ((float) Math.abs(time - bandWidth.getTime())) / 1000;
-		receivedPerSec = ((long) ((received - bandWidth.getReceived()) / rate));
-		sentPerSec = ((long) ((sent - bandWidth.getSent()) / rate));
+	public DiskBusy adjust(DiskBusy diskBusy) {
+		float rate = ((float) Math.abs(time - diskBusy.getTime())) / 1000;
+		readPerSec = ((long) ((read - diskBusy.getRead()) / rate));
+		writePerSec = ((long) ((write - diskBusy.getWrite()) / rate));
 		return this;
 	}
 
@@ -71,36 +71,36 @@ public class BandWidth implements Serializable {
 		return time;
 	}
 
-	public long getSentPerSec() {
-		return sentPerSec;
+	public long getWritePerSec() {
+		return writePerSec;
 	}
 
-	public void setSentPerSec(long sentPerSec) {
-		this.sentPerSec = sentPerSec;
+	public void setWritePerSec(long writePerSec) {
+		this.writePerSec = writePerSec;
 	}
 
-	public long getReceivedPerSec() {
-		return receivedPerSec;
+	public long getReadPerSec() {
+		return readPerSec;
 	}
 
-	public void setReceivedPerSec(long receivedPerSec) {
-		this.receivedPerSec = receivedPerSec;
+	public void setReadPerSec(long readPerSec) {
+		this.readPerSec = readPerSec;
 	}
 
-	public long getReceived() {
-		return received;
+	public long getRead() {
+		return read;
 	}
 
-	public void setReceived(long received) {
-		this.received = received;
+	public void setRead(long read) {
+		this.read = read;
 	}
 
-	public long getSent() {
-		return sent;
+	public long getWrite() {
+		return write;
 	}
 
-	public void setSent(long sent) {
-		this.sent = sent;
+	public void setWrite(long write) {
+		this.write = write;
 	}
 
 	/* (non-Javadoc)

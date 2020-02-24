@@ -161,6 +161,12 @@ public abstract class AbstractGrinderClassPathProcessor {
 		uselessJarList.add("ngrinder-controller");
 		uselessJarList.add("ngrinder-groovy");
 		uselessJarList.add("spring");
+		usefulJarList.add("javacsv");
+		usefulJarList.add("commons-logging");
+		usefulJarList.add("commons-collections");
+		usefulJarList.add("ezmorph");
+		usefulJarList.add("commons-beanutils");
+		usefulJarList.add("json-lib");
 	}
 
 	protected abstract void initMore();
