@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>ngrinder</artifactId>
 		<groupId>org.ngrinder</groupId>
-		<version>3.4.1</version>
+		<version>3.4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>ngrinder-core</artifactId>
 	<name>ngrinder-core</name>
@@ -12,6 +12,7 @@
 
 	<properties>
 		<outputfilename>${project.version}.jar</outputfilename>
+		<ngrinder.version>${project.version}</ngrinder.version>
 	</properties>
 
 	<dependencies>
@@ -42,6 +43,8 @@
 			<groupId>sigar</groupId>
 			<artifactId>sigar-native</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/../lib/sigar-native-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>org.python</groupId>

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.ngrinder</groupId>
 		<artifactId>ngrinder</artifactId>
-		<version>3.4.1</version>
+		<version>3.4.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>ngrinder-controller</artifactId>
 	<name>ngrinder-controller</name>
@@ -278,7 +278,11 @@
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.2.2.Final</version>
 		</dependency>
-
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-ehcache</artifactId>
+			<version>4.2.2.Final</version>
+		</dependency>
 
 		<!-- AspectJ dependencies -->
 		<dependency>
@@ -302,6 +306,8 @@
 			<groupId>org.ngrinder</groupId>
 			<artifactId>universal-analytics-java</artifactId>
 			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/../lib/universal-analytics-java-1.0.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -338,7 +344,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.2</version>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
@@ -405,7 +411,7 @@
 			<artifactId>pf4j</artifactId>
 			<version>0.12.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>ro.fortsoft.pf4j</groupId>
 			<artifactId>pf4j-spring</artifactId>
@@ -425,13 +431,32 @@
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
-			<version>3.2.2</version>
+			<version>3.2.1</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.navercorp.lucy</groupId>
 			<artifactId>lucy-xss-servlet</artifactId>
 			<version>2.0.0</version>
+		</dependency>
+
+		<!--extend JAR-->
+		<dependency>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			<version>1.0.6</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/net.sf.json-lib/json-lib -->
+		<dependency>
+			<groupId>net.sf.json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+			<version>2.4</version>
+			<classifier>jdk15</classifier>
 		</dependency>
 	</dependencies>
 
@@ -497,6 +522,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
+					<webResources>
+						<resource>
+							<directory>${project.basedir}/../lib</directory>
+							<targetPath>WEB-INF/lib/</targetPath>
+							<includes>
+								<include>**/*.jar</include>
+							</includes>
+						</resource>
+					</webResources>
 					<archive>
 						<manifest>
 							<mainClass>org.ngrinder.NGrinderControllerStarter</mainClass>
